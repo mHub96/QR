@@ -2,8 +2,8 @@
 <html dir="rtl" lang="ar">
 <head>
     <meta charset="UTF-8">
-    <link rel="preconnect" href="https://script.google.com/macros/s/AKfycbzXPOdLnXVLfDNNj_WfVS4tT1HCb6qBzo5lghvX-pYZwCoCV4zcM5NOrJ5Jwp6x4qsJfg/exec">
-    <link rel="dns-prefetch" href="https://script.google.com/macros/s/AKfycbzXPOdLnXVLfDNNj_WfVS4tT1HCb6qBzo5lghvX-pYZwCoCV4zcM5NOrJ5Jwp6x4qsJfg/exec">
+    <link rel="preconnect" href="https://script.google.com">
+    <link rel="dns-prefetch" href="https://script.google.com">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>نظام خفر الاستشارية</title>
     
@@ -12,102 +12,100 @@
             --primary: #007aff;
             --success: #34c759;
             --bg-dark: #0a0a0c;
-            --glass: rgba(255, 255, 255, 0.06);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.12);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             margin: 0; padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: radial-gradient(circle at top left, #1a1a2e, #0a0a0c);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 122, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(52, 199, 89, 0.05) 0%, transparent 50%);
             color: white;
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh; overflow: hidden;
         }
 
-        /* Animated Background Gradients */
-        body::before {
-            content: ""; position: absolute; width: 300px; height: 300px;
-            background: var(--primary); filter: blur(120px);
-            top: -100px; left: -100px; opacity: 0.2; z-index: -1;
+        /* Animated Ambient Light */
+        body::after {
+            content: ""; position: absolute; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            opacity: 0.05; pointer-events: none; z-index: -1;
         }
 
-        /* Glassmorphism Card */
         .glass-card {
-            width: 90%; max-width: 400px;
+            width: 92%; max-width: 400px;
             background: var(--glass);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--glass-border);
-            border-radius: 30px; padding: 40px 25px;
-            text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-            animation: fadeIn 0.8s ease-out;
+            border-radius: 32px; padding: 40px 28px;
+            text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            animation: slideUp 0.7s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
         .icon-box {
-            width: 80px; height: 80px; background: var(--glass);
+            width: 74px; height: 74px; background: rgba(255,255,255,0.04);
             border-radius: 22px; display: flex; align-items: center;
-            justify-content: center; margin: 0 auto 20px; font-size: 2.5rem;
+            justify-content: center; margin: 0 auto 20px; font-size: 2.4rem;
             border: 1px solid var(--glass-border);
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
         }
 
-        h2 { margin: 0 0 10px; font-weight: 700; font-size: 1.6rem; letter-spacing: -0.5px; }
-        #status { font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 30px; }
+        h2 { margin: 0 0 8px; font-weight: 700; font-size: 1.6rem; letter-spacing: -0.5px; }
+        #status { font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-bottom: 30px; min-height: 1.2rem; }
 
-        /* Modern Inputs */
         input[type="password"] {
-            width: 100%; height: 65px; background: rgba(0,0,0,0.2);
-            border: 1px solid var(--glass-border); border-radius: 18px;
+            width: 100%; height: 65px; background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border); border-radius: 20px;
             color: white; font-size: 2rem; text-align: center;
-            margin-bottom: 20px; outline: none; letter-spacing: 10px;
+            margin-bottom: 20px; outline: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 8px;
         }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(0,122,255,0.1); }
+        input:focus { border-color: var(--primary); background: rgba(0,0,0,0.4); box-shadow: 0 0 0 4px rgba(0,122,255,0.1); }
 
         button {
-            width: 100%; height: 60px; background: var(--primary);
-            color: white; border: none; border-radius: 18px;
-            font-size: 1.1rem; font-weight: 600; cursor: pointer;
-            transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+            width: 100%; height: 62px; background: var(--primary);
+            color: white; border: none; border-radius: 20px;
+            font-size: 1.15rem; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
         }
-        button:active { transform: scale(0.96); opacity: 0.9; }
-        button:disabled { background: #333; cursor: not-allowed; }
+        button:disabled { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.2); cursor: not-allowed; }
+        button:active:not(:disabled) { transform: scale(0.96); opacity: 0.9; }
 
         /* Results UI */
         .badge {
-            display: inline-block; padding: 6px 16px; background: rgba(0,122,255,0.1);
-            color: var(--primary); border-radius: 10px; font-size: 0.8rem;
-            font-weight: 700; margin-bottom: 10px; text-transform: uppercase;
+            display: inline-block; padding: 6px 16px; background: rgba(0,122,255,0.15);
+            color: var(--primary); border-radius: 10px; font-size: 0.85rem;
+            font-weight: 700; margin-bottom: 12px; border: 1px solid rgba(0,122,255,0.2);
         }
-        .name-title { font-size: 1.8rem; margin: 0 0 25px; font-weight: 800; }
+        .name-title { font-size: 2rem; margin: 0 0 25px; font-weight: 800; color: #fff; }
+        .info-row { background: rgba(0,0,0,0.3); padding: 24px; border-radius: 24px; margin-bottom: 28px; border: 1px solid var(--glass-border); }
+        .phone-val { font-size: 1.9rem; font-weight: 800; color: #fff; direction: ltr; display: block; letter-spacing: 1px; }
         
-        .info-row {
-            background: rgba(0,0,0,0.2); padding: 20px; border-radius: 20px;
-            margin-bottom: 25px; border: 1px solid var(--glass-border);
-        }
-        .phone-label { font-size: 0.75rem; color: rgba(255,255,255,0.4); display: block; margin-bottom: 5px; }
-        .phone-val { font-size: 1.8rem; font-weight: 800; color: white; direction: ltr; display: block; }
-
-        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .btn-action {
-            padding: 18px; border-radius: 18px; text-decoration: none;
-            color: white; font-weight: 700; font-size: 0.95rem;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .btn-call { background: var(--primary); }
-        .btn-wa { background: var(--success); }
-
-        /* Loader */
-        .spin { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: s 0.8s linear infinite; }
-        @keyframes s { to { transform: rotate(360deg); } }
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .btn-action { padding: 18px; border-radius: 18px; text-decoration: none; color: white; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1rem; transition: transform 0.2s; }
+        .btn-action:active { transform: scale(0.95); }
+        
+        /* Spinner */
+        .spin { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: rot 0.8s linear infinite; }
+        @keyframes rot { to { transform: rotate(360deg); } }
+        
+        /* Shake Animation */
+        .shake { animation: shake 0.4s ease-in-out; }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
     </style>
 </head>
 <body>
 
     <div id="lock-screen" class="glass-card">
-        <div class="icon-box">🛡️</div>
+        <div class="icon-box">🩺</div>
         <h2>دخول المصرح لهم</h2>
         <p id="status">جاري تأمين الاتصال...</p>
         
@@ -121,79 +119,83 @@
 
     <div id="main-content" class="glass-card" style="display:none;">
         <div class="badge" id="service-display">SERVICE</div>
-        <h1 class="name-title" id="name-display">د. محمد علي</h1>
+        <h1 class="name-title" id="name-display">...</h1>
         
         <div class="info-row">
-            <span class="phone-label">رقم الهاتف المباشر</span>
-            <span class="phone-val" id="phone-display">07700000000</span>
+            <span style="font-size: 0.8rem; color: rgba(255,255,255,0.4); display: block; margin-bottom: 8px;">رقم الهاتف المباشر</span>
+            <span class="phone-val" id="phone-display">...</span>
         </div>
         
         <div class="actions">
-            <a href="#" id="call-link" class="btn-action btn-call">📞 اتصال</a>
-            <a href="#" id="wa-link" class="btn-action btn-wa" style="display:none;">💬 واتساب</a>
+            <a href="#" id="call-link" class="btn-action" style="background: var(--primary); box-shadow: 0 10px 20px rgba(0,122,255,0.2);">📞 اتصال</a>
+            <a href="#" id="wa-link" class="btn-action" style="background: var(--success); box-shadow: 0 10px 20px rgba(52,199,89,0.2); display:none;">💬 واتساب</a>
         </div>
-        <p id="time-stamp" style="margin-top:25px; font-size:0.7rem; opacity:0.3; direction:ltr;"></p>
+        <p id="time-stamp" style="margin-top:30px; font-size:0.75rem; opacity:0.3; direction:ltr;"></p>
     </div>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const service = urlParams.get('service');
         const ward = urlParams.get('ward');
-        const scriptUrl = "YOUR_SCRIPT_URL_HERE";
+        const scriptUrl = "https://script.google.com/macros/s/AKfycbzXPOdLnXVLfDNNj_WfVS4tT1HCb6qBzo5lghvX-pYZwCoCV4zcM5NOrJ5Jwp6x4qsJfg/exec";
 
-        // Immediate Fetch
-        window.dataPromise = fetch(`${scriptUrl}?service=${service}&ward=${ward}&json=true&t=${Date.now()}`)
-            .then(res => res.json())
-            .catch(() => null);
+        let dutyData = null;
 
-        async function init() {
-            const data = await window.dataPromise;
-            const btnText = document.getElementById('btn-text');
-            const btn = document.getElementById('unlock-btn');
-            
-            if (data) {
-                document.getElementById('status').innerText = "تم التحقق من البيانات ✅";
-                btnText.innerText = "دخول";
-                btn.disabled = false;
-            } else {
-                document.getElementById('status').innerText = "خطأ في الاتصال بالسيرفر";
+        async function loadData() {
+            if (!service || !ward) {
+                document.getElementById('status').innerText = "⚠️ الرابط غير مكتمل";
+                return;
             }
-        }
 
-        async function unlock() {
-            const btnText = document.getElementById('btn-text');
-            const btnLoader = document.getElementById('btn-loader');
-            const data = await window.dataPromise;
-            
-            btnText.style.display = 'none';
-            btnLoader.style.display = 'block';
-
-            setTimeout(() => {
-                const pass = document.getElementById('pw').value;
-                if (data && pass === data.password.toString()) {
-                    showData(data);
+            try {
+                // Parallel fetch started as soon as the script runs
+                const response = await fetch(`${scriptUrl}?service=${service}&ward=${ward}&json=true&t=${Date.now()}`);
+                const data = await response.json();
+                
+                if (data && !data.error) {
+                    dutyData = data;
+                    document.getElementById('status').innerText = "متصل بالسيرفر ✅";
                 } else {
-                    alert("الرمز غير صحيح ❌");
-                    btnText.style.display = 'block';
-                    btnLoader.style.display = 'none';
-                    document.getElementById('pw').value = "";
+                    document.getElementById('status').innerText = "لا يوجد خفر مسجل حالياً";
                 }
-            }, 400); // Small delay for "feel"
+            } catch (error) {
+                document.getElementById('status').innerText = "وضع الأوفلاين";
+            } finally {
+                document.getElementById('unlock-btn').disabled = false;
+                document.getElementById('btn-text').innerText = "دخول";
+            }
         }
 
-        function showData(data) {
-            document.getElementById('service-display').innerText = data.resident.serviceArabic;
-            document.getElementById('name-display').innerText = data.resident.name;
-            document.getElementById('phone-display').innerText = data.resident.phone;
-            document.getElementById('time-stamp').innerText = data.timestamp;
-            document.getElementById('call-link').href = "tel:" + data.resident.phone;
-            
-            if (data.whatsappDigits) {
-                const wa = document.getElementById('wa-link');
-                wa.style.display = 'flex';
-                wa.href = "https://wa.me/" + data.whatsappDigits;
-            }
+        function unlock() {
+            const input = document.getElementById('pw');
+            const pass = input.value;
+            const correct = dutyData ? dutyData.password.toString() : "1234";
 
+            if (pass === correct) {
+                showUI();
+            } else {
+                const card = document.getElementById('lock-screen');
+                card.classList.add('shake');
+                setTimeout(() => card.classList.remove('shake'), 400);
+                input.value = "";
+                input.focus();
+            }
+        }
+
+        function showUI() {
+            if (dutyData) {
+                document.getElementById('service-display').innerText = dutyData.resident.serviceArabic;
+                document.getElementById('name-display').innerText = dutyData.resident.name;
+                document.getElementById('phone-display').innerText = dutyData.resident.phone;
+                document.getElementById('time-stamp').innerText = dutyData.timestamp;
+                document.getElementById('call-link').href = "tel:" + dutyData.resident.phone;
+                
+                if (dutyData.whatsappDigits) {
+                    const wa = document.getElementById('wa-link');
+                    wa.style.display = 'flex';
+                    wa.href = "https://wa.me/" + dutyData.whatsappDigits;
+                }
+            }
             document.getElementById('lock-screen').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
         }
@@ -202,7 +204,7 @@
             if (e.key === 'Enter' && !document.getElementById('unlock-btn').disabled) unlock();
         });
 
-        init();
+        loadData();
     </script>
 </body>
 </html>
