@@ -1,132 +1,114 @@
-// 1. Capture parameters from the URL (e.g., ?service=NS&ward=PRI)
+// 1. Get parameters from the URL
 const urlParams = new URLSearchParams(window.location.search);
 const service = urlParams.get('service');
 const ward = urlParams.get('ward');
 
-// 2. Your specific Google Apps Script Web App URL
+// 2. YOUR WEB APP URL - Ensure this is the "Executed" URL from the "Anyone" deployment
 const webAppUrl = "https://script.google.com/macros/s/AKfycbzXPOdLnXVLfDNNj_WfVS4tT1HCb6qBzo5lghvX-pYZwCoCV4zcM5NOrJ5Jwp6x4qsJfg/exec";
 
-// Global variable to store data once fetched
 let dutyData = null;
 
 /**
- * Main function to fetch data from the Google Sheets API (Hybrid Code.gs)
+ * Fetches data from the Google Script
  */
 async function fetchDutyData() {
-    console.log("Starting fetch process...");
-
-    // Basic validation: If URL is just mhub96.github.io/QR/ without extras
+    const btn = document.getElementById('unlock-btn');
+    
+    // Check if URL has parameters
     if (!service || !ward) {
-        console.error("Missing Service or Ward parameters in URL.");
-        const btn = document.getElementById('unlock-btn');
-        if (btn) {
-            btn.innerText = "رابط غير صالح ⚠️";
-            btn.style.background = "#dc3545";
-        }
+        if(btn) btn.innerText = "رابط غير صالح (نقص بيانات) ⚠️";
+        console.error("URL is missing 'service' or 'ward' parameters.");
         return;
     }
 
     try {
-        // Construct the URL with the json=true flag for our Hybrid script
+        // Construct URL with json=true to trigger the JSON mode in Code.gs
         const finalUrl = `${webAppUrl}?service=${encodeURIComponent(service)}&ward=${encodeURIComponent(ward)}&json=true`;
         
-        console.log("Fetching from:", finalUrl);
+        console.log("Attempting to connect to:", finalUrl);
 
-        // 'redirect: follow' is crucial for Google Apps Script
+        // Fetch with specific settings for Google Apps Script
         const response = await fetch(finalUrl, {
             method: 'GET',
-            mode: 'cors',
-            redirect: 'follow'
+            mode: 'cors', // Crucial for cross-domain requests
+            redirect: 'follow' // Crucial for Google Script redirects
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error('Network response was not ok');
 
         const data = await response.json();
-        console.log("Data received successfully:", data);
-
+        
         if (data.error) {
-            console.warn("API returned an error:", data.error);
-            document.getElementById('unlock-btn').innerText = "لا يوجد خفر 📅";
+            if(btn) btn.innerText = "لا يوجد خفر حالياً 📅";
+            console.error("Server returned error:", data.error);
             return;
         }
 
-        // Store data and enable the UI
+        // Successfully loaded data
         dutyData = data;
-        const btn = document.getElementById('unlock-btn');
-        if (btn) {
+        if(btn) {
             btn.disabled = false;
             btn.innerText = "دخول";
             btn.style.background = "var(--accent)";
         }
+        console.log("Data loaded successfully 🇮🇶");
 
     } catch (err) {
-        console.error("Critical Fetch Error:", err);
-        const btn = document.getElementById('unlock-btn');
-        if (btn) {
-            btn.innerText = "فشل الاتصال 🌐";
-            btn.style.background = "#C0392B";
+        console.error("Fetch Error:", err);
+        if(btn) {
+            btn.innerText = "فشل الاتصال بالسيرفر 🌐";
+            btn.style.background = "#d63031";
         }
     }
 }
 
 /**
- * Handles the password check and UI transition
+ * Validates password and shows content
  */
 function unlock() {
     const userInput = document.getElementById('pw').value;
+    const lockScreen = document.getElementById('lock-screen');
+    const mainContent = document.getElementById('main-content');
     
-    if (!dutyData) {
-        console.warn("Unlock attempted before data loaded.");
-        return;
-    }
+    if (!dutyData) return;
 
-    // Verify password against data sent from Google
-    if (userInput === dutyData.password) {
-        console.log("Access Granted. Populating UI...");
+    // Check password against the one sent from Google
+    if (userInput === dutyData.password.toString()) {
+        
+        // Fill the HTML with the doctor's info
+        document.getElementById('service-display').innerText = dutyData.resident.serviceArabic;
+        document.getElementById('name-display').innerText = dutyData.resident.name;
+        document.getElementById('phone-display').innerText = dutyData.resident.phone;
+        document.getElementById('time-display').innerText = dutyData.timestamp;
 
-        // Map data to HTML elements
-        document.getElementById('service-display').innerText = dutyData.resident.serviceArabic || "القسم";
-        document.getElementById('name-display').innerText = dutyData.resident.name || "الاسم غير متوفر";
-        document.getElementById('phone-display').innerText = dutyData.resident.phone || "---";
-        document.getElementById('time-display').innerText = dutyData.timestamp || "";
+        // Call Button
+        document.getElementById('call-btn').href = "tel:" + dutyData.resident.phone;
 
-        // Update Phone Button
-        const callBtn = document.getElementById('call-btn');
-        callBtn.href = "tel:" + dutyData.resident.phone;
-
-        // Update WhatsApp Button
+        // WhatsApp Button
         const waBtn = document.getElementById('wa-btn');
         if (dutyData.whatsappDigits) {
             waBtn.href = "https://wa.me/" + dutyData.whatsappDigits;
             waBtn.style.display = "flex";
-        } else {
-            waBtn.style.display = "none";
         }
 
-        // Hide Lock Screen, Show Content
-        document.getElementById('lock-screen').style.opacity = "0";
-        setTimeout(() => {
-            document.getElementById('lock-screen').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-        }, 300);
-
+        // Transition: Hide lock, Show content
+        lockScreen.style.display = 'none';
+        mainContent.style.display = 'block';
+        
     } else {
         alert('الرمز غير صحيح ❌');
         document.getElementById('pw').value = "";
     }
 }
 
-// Ensure Enter key works for password submission
+// Enable "Enter" key for password input
 document.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
-        const lockScreen = document.getElementById('lock-screen');
-        if (lockScreen.style.display !== 'none') {
+        if (document.getElementById('lock-screen').style.display !== 'none') {
             unlock();
         }
     }
 });
 
-// Execute fetch on page load
-fetchDutyData();
+// Start the fetch when the page finishes loading
+window.addEventListener('load', fetchDutyData);
