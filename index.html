@@ -11,7 +11,7 @@
             --accent: #007BFF;
             --text: #ffffff; 
             --success: #25D366;
-            --max-ui-width: 300px; /* Unified width for UI elements */
+            --max-ui-width: 300px;
         }
         
         * { box-sizing: border-box; transition: all 0.3s ease; }
@@ -23,7 +23,6 @@
             overflow: hidden;
         }
 
-        /* Lock Screen - Fixed full screen overlay */
         #lock-screen {
             position: fixed; inset: 0; background: var(--bg);
             display: flex; flex-direction: column; 
@@ -35,7 +34,6 @@
         h2 { margin: 10px 0; font-weight: 600; }
         #status { color: #888; margin-bottom: 20px; font-size: 0.9rem; }
 
-        /* Input Styling */
         input {
             width: 100%; max-width: var(--max-ui-width); 
             padding: 18px; border-radius: 16px; border: 2px solid #333;
@@ -44,19 +42,27 @@
         }
         input:focus { border-color: var(--accent); }
 
-        /* Button Styling - FIXED HEIGHT TO PREVENT STRETCHING */
         #unlock-btn { 
             width: 100%; max-width: var(--max-ui-width); 
-            height: 60px; /* Constant height */
+            height: 60px;
             background: var(--accent); color: white;
             border-radius: 16px; border: none;
             font-size: 1.1rem; font-weight: bold;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
         }
-        #unlock-btn:active { transform: scale(0.97); }
 
-        /* Main Content Container */
+        /* --- STYLING FOR DISABLED STATE --- */
+        #unlock-btn:disabled {
+            background: #333;
+            color: #777;
+            cursor: not-allowed;
+            opacity: 0.6;
+            box-shadow: none;
+        }
+
+        #unlock-btn:active:not(:disabled) { transform: scale(0.97); }
+
         .container {
             display: none; width: 100%; max-width: 450px; 
             background: var(--card-bg); border-radius: 28px; 
@@ -80,7 +86,6 @@
         .btn-call { background: var(--accent); color: white; }
         .btn-wa { background: var(--success); color: white; display: none; }
 
-        /* Spinner Animation */
         .loader { width: 18px; height: 18px; border: 2px solid #fff; border-bottom-color: transparent; border-radius: 50%; animation: rotation 1s linear infinite; }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -94,9 +99,9 @@
         
         <input type="password" id="pw" pattern="[0-9]*" inputmode="numeric" placeholder="••••">
         
-        <button id="unlock-btn" onclick="unlock()">
+        <button id="unlock-btn" onclick="unlock()" disabled>
             <span id="loader-icon" class="loader"></span>&nbsp;
-            <span id="btn-text">دخول</span>
+            <span id="btn-text">جاري التحميل...</span>
         </button>
     </div>
 
@@ -126,9 +131,14 @@
         let dutyData = null;
 
         async function init() {
+            const btn = document.getElementById('unlock-btn');
+            const btnText = document.getElementById('btn-text');
+            const loader = document.getElementById('loader-icon');
+
             if (!service || !ward) {
                 document.getElementById('status').innerText = "⚠️ الرابط غير مكتمل";
-                document.getElementById('loader-icon').style.display = 'none';
+                loader.style.display = 'none';
+                btnText.innerText = "خطأ في الرابط";
                 return;
             }
 
@@ -145,9 +155,13 @@
                     document.getElementById('status').innerText = "لا يوجد خفر مسجل حالياً 📅";
                 }
             } catch (e) {
-                document.getElementById('status').innerText = "وضع المعاينة (اضغط دخول)";
+                document.getElementById('status').innerText = "فشل الاتصال - وضع المعاينة";
             }
-            document.getElementById('loader-icon').style.display = 'none';
+
+            // --- REVEAL BUTTON AFTER LOADING ---
+            loader.style.display = 'none';
+            btn.disabled = false; // Enable the button
+            btnText.innerText = "دخول"; // Change text back to normal
         }
 
         function unlock() {
@@ -179,8 +193,10 @@
             }
         }
 
-        // Trigger unlock on keyboard Enter
-        document.getElementById('pw').addEventListener('keypress', (e) => { if (e.key === 'Enter') unlock(); });
+        document.getElementById('pw').addEventListener('keypress', (e) => { 
+            const btn = document.getElementById('unlock-btn');
+            if (e.key === 'Enter' && !btn.disabled) unlock(); 
+        });
 
         init();
     </script>
