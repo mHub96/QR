@@ -1,9 +1,7 @@
-// 1. Get parameters from the URL
 const urlParams = new URLSearchParams(window.location.search);
 const service = urlParams.get('service');
 const ward = urlParams.get('ward');
 
-// 2. YOUR WEB APP URL (Make sure this is the /exec link)
 const webAppUrl = "https://script.google.com/macros/s/AKfycbzXPOdLnXVLfDNNj_WfVS4tT1HCb6qBzo5lghvX-pYZwCoCV4zcM5NOrJ5Jwp6x4qsJfg/exec";
 
 let dutyData = null;
@@ -13,6 +11,16 @@ async function fetchDutyData() {
     const loader = document.getElementById('loader');
     const btn = document.getElementById('unlock-btn');
 
+    // --- EMERGENCY BYPASS TIMER ---
+    // If it stays "Loading" for 5 seconds, show a bypass option
+    setTimeout(() => {
+        if (dutyData === null && btnText.innerText.includes("Loading")) {
+            btnText.innerText = "دخول (وضع الأوفلاين)";
+            btn.disabled = false;
+            if(loader) loader.style.display = "none";
+        }
+    }, 5000);
+
     if (!service || !ward) {
         if(btnText) btnText.innerText = "رابط غير مكتمل ⚠️";
         if(loader) loader.style.display = "none";
@@ -20,14 +28,10 @@ async function fetchDutyData() {
     }
 
     try {
-        // We add a 'cache-buster' (cb) so the browser doesn't show old data
         const finalUrl = `${webAppUrl}?service=${encodeURIComponent(service)}&ward=${encodeURIComponent(ward)}&json=true&cb=${Date.now()}`;
         
-        console.log("Connecting to Google Bridge...");
-
         const response = await fetch(finalUrl, {
             method: 'GET',
-            // No headers allowed for Google Apps Script 'GET' requests
             mode: 'cors',
             redirect: 'follow' 
         });
@@ -37,45 +41,55 @@ async function fetchDutyData() {
         const data = await response.json();
         
         if (data.error) {
-            console.error("API Error:", data.error);
             if(btnText) btnText.innerText = "لا يوجد خفر 📅";
             if(loader) loader.style.display = "none";
             return;
         }
 
-        // Success: Store and Enable
         dutyData = data;
-        if(btn) btn.disabled = false;
-        if(btnText) btnText.innerText = "دخول";
+        btn.disabled = false;
+        btnText.innerText = "دخول";
         if(loader) loader.style.display = "none";
 
     } catch (err) {
-        console.error("Connection failed:", err);
-        if(btnText) btnText.innerText = "فشل الاتصال 🌐";
+        console.error("Fetch failed:", err);
+        // Don't kill the button, let them try offline mode
+        btn.disabled = false;
+        btnText.innerText = "دخول (فشل الاتصال)";
         if(loader) loader.style.display = "none";
     }
 }
 
-// Keep your unlock() function as is
 function unlock() {
     const userInput = document.getElementById('pw').value;
-    if (!dutyData) return;
+    const lockScreen = document.getElementById('lock-screen');
+    const mainContent = document.getElementById('main-content');
 
-    if (userInput === dutyData.password.toString()) {
-        document.getElementById('service-display').innerText = dutyData.resident.serviceArabic;
-        document.getElementById('name-display').innerText = dutyData.resident.name;
-        document.getElementById('phone-display').innerText = dutyData.resident.phone;
-        document.getElementById('time-display').innerText = dutyData.timestamp;
-        document.getElementById('call-btn').href = "tel:" + dutyData.resident.phone;
+    // If Google worked, use Google's password. Otherwise, use 1234 as fallback.
+    const correctPassword = dutyData ? dutyData.password.toString() : "1234";
 
-        if (dutyData.whatsappDigits) {
-            const waBtn = document.getElementById('wa-btn');
-            waBtn.href = "https://wa.me/" + dutyData.whatsappDigits;
-            waBtn.style.display = "flex";
+    if (userInput === correctPassword) {
+        if (dutyData) {
+            // Fill with real data
+            document.getElementById('service-display').innerText = dutyData.resident.serviceArabic;
+            document.getElementById('name-display').innerText = dutyData.resident.name;
+            document.getElementById('phone-display').innerText = dutyData.resident.phone;
+            document.getElementById('time-display').innerText = dutyData.timestamp;
+            document.getElementById('call-btn').href = "tel:" + dutyData.resident.phone;
+            if (dutyData.whatsappDigits) {
+                const waBtn = document.getElementById('wa-btn');
+                waBtn.href = "https://wa.me/" + dutyData.whatsappDigits;
+                waBtn.style.display = "flex";
+            }
+        } else {
+            // Fill with "Offline/Test" placeholders
+            document.getElementById('name-display').innerText = "وضع المعاينة (تجربة)";
+            document.getElementById('phone-display').innerText = "07XXXXXXXXX";
+            document.getElementById('service-display').innerText = "لا يوجد اتصال";
         }
 
-        document.getElementById('lock-screen').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
+        lockScreen.style.display = 'none';
+        mainContent.style.display = 'block';
     } else {
         alert('الرمز غير صحيح ❌');
         document.getElementById('pw').value = "";
