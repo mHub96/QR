@@ -11,8 +11,7 @@
             --accent: #007BFF;
             --text: #ffffff; 
             --success: #25D366;
-            --input-width: 85%;
-            --max-ui-width: 320px;
+            --max-ui-width: 300px; /* Unified width for UI elements */
         }
         
         * { box-sizing: border-box; transition: all 0.3s ease; }
@@ -21,89 +20,101 @@
             margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, sans-serif; 
             background-color: var(--bg); color: var(--text);
             display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            overflow: hidden;
         }
 
-        /* Container for Main Content */
+        /* Lock Screen - Fixed full screen overlay */
+        #lock-screen {
+            position: fixed; inset: 0; background: var(--bg);
+            display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; 
+            z-index: 1000; padding: 20px;
+        }
+
+        .lock-icon { font-size: 3.5rem; margin-bottom: 10px; }
+        h2 { margin: 10px 0; font-weight: 600; }
+        #status { color: #888; margin-bottom: 20px; font-size: 0.9rem; }
+
+        /* Input Styling */
+        input {
+            width: 100%; max-width: var(--max-ui-width); 
+            padding: 18px; border-radius: 16px; border: 2px solid #333;
+            background: #1e1e1e; color: white; font-size: 1.4rem; 
+            text-align: center; margin-bottom: 20px; outline: none;
+        }
+        input:focus { border-color: var(--accent); }
+
+        /* Button Styling - FIXED HEIGHT TO PREVENT STRETCHING */
+        #unlock-btn { 
+            width: 100%; max-width: var(--max-ui-width); 
+            height: 60px; /* Constant height */
+            background: var(--accent); color: white;
+            border-radius: 16px; border: none;
+            font-size: 1.1rem; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        }
+        #unlock-btn:active { transform: scale(0.97); }
+
+        /* Main Content Container */
         .container {
-            width: 100%; max-width: 450px; background: var(--card-bg);
-            border-radius: 28px; padding: 40px 24px; text-align: center;
+            display: none; width: 100%; max-width: 450px; 
+            background: var(--card-bg); border-radius: 28px; 
+            padding: 40px 24px; text-align: center;
             box-shadow: 0 20px 40px rgba(0,0,0,0.5); border: 1px solid #333;
         }
 
         .badge {
             display: inline-block; padding: 8px 20px; background: rgba(0, 123, 255, 0.15);
-            color: var(--accent); border-radius: 50px; font-size: 0.95rem; margin-bottom: 15px; font-weight: bold;
+            color: var(--accent); border-radius: 50px; font-size: 0.9rem; margin-bottom: 15px; font-weight: bold;
         }
 
         .contact-info { background: #282828; padding: 24px; border-radius: 20px; margin: 30px 0; border: 1px solid #383838; }
-        .phone-num { font-size: 1.8rem; direction: ltr; display: block; color: var(--accent); font-weight: 800; }
+        .phone-num { font-size: 1.8rem; direction: ltr; display: block; color: var(--accent); font-weight: 800; margin-top: 5px; }
         
         .btn-group { display: flex; gap: 14px; }
-        
-        .btn {
+        .action-btn {
             flex: 1; padding: 18px; border-radius: 16px; text-decoration: none;
-            font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px; border: none; cursor: pointer;
+            font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px; border: none;
         }
         .btn-call { background: var(--accent); color: white; }
         .btn-wa { background: var(--success); color: white; display: none; }
 
-        /* Lock Screen Styling */
-        #lock-screen {
-            position: fixed; inset: 0; background: var(--bg);
-            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000;
-            padding: 20px;
-        }
-
-        /* Fixed the button width issue by matching input and button widths */
-        input {
-            width: var(--input-width); max-width: var(--max-ui-width); padding: 18px; border-radius: 16px; border: 2px solid #333;
-            background: #1e1e1e; color: white; font-size: 1.4rem; text-align: center; margin: 25px 0;
-        }
-        input:focus { border-color: var(--accent); outline: none; }
-
-        #unlock-btn { 
-            width: var(--input-width); 
-            max-width: var(--max-ui-width); 
-            min-height: 60px;
-        }
-
-        #main-content { display: none; width: 100%; max-width: 450px; }
-
-        /* Spinner */
-        .loader { width: 18px; height: 18px; border: 2px solid #fff; border-bottom-color: transparent; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
+        /* Spinner Animation */
+        .loader { width: 18px; height: 18px; border: 2px solid #fff; border-bottom-color: transparent; border-radius: 50%; animation: rotation 1s linear infinite; }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
     <div id="lock-screen">
-        <div style="font-size: 3.5rem; margin-bottom: 15px;">🛡️</div>
-        <h2 style="margin: 0;">دخول المصرح لهم</h2>
-        <p id="status" style="color:#888; margin-top: 10px;">جاري تحميل بيانات الطبيب...</p>
+        <div class="lock-icon">🛡️</div>
+        <h2>دخول المصرح لهم</h2>
+        <p id="status">جاري التحقق من البيانات...</p>
         
         <input type="password" id="pw" pattern="[0-9]*" inputmode="numeric" placeholder="••••">
         
-        <button id="unlock-btn" onclick="unlock()" class="btn btn-call">
+        <button id="unlock-btn" onclick="unlock()">
             <span id="loader-icon" class="loader"></span>&nbsp;
             <span id="btn-text">دخول</span>
         </button>
     </div>
 
     <div class="container" id="main-content">
-        <div class="badge" id="service-display">...</div>
-        <h1 id="name-display" style="margin-top: 0;">...</h1>
+        <div class="badge" id="service-display">جاري التحميل...</div>
+        <h1 id="name-display" style="margin: 0 0 10px 0;">اسم الطبيب</h1>
         
         <div class="contact-info">
             <span style="color:#888; font-size: 0.9rem;">رقم الهاتف المباشر</span>
-            <span class="phone-num" id="phone-display">...</span>
+            <span class="phone-num" id="phone-display">07XXXXXXXXX</span>
         </div>
         
         <div class="btn-group">
-            <a href="#" id="call-btn" class="btn btn-call">📞 اتصال هاتفـي</a>
-            <a href="#" id="wa-btn" class="btn btn-wa">💬 واتساب</a>
+            <a href="#" id="call-link" class="action-btn btn-call">📞 اتصال</a>
+            <a href="#" id="wa-link" class="action-btn btn-wa">💬 واتساب</a>
         </div>
         
-        <div id="time-display" style="margin-top:30px; color:#666; font-size:0.85rem; direction: ltr;"></div>
+        <div id="time-stamp" style="margin-top:25px; color:#555; font-size:0.8rem; direction: ltr;"></div>
     </div>
 
     <script>
@@ -116,35 +127,31 @@
 
         async function init() {
             if (!service || !ward) {
-                document.getElementById('status').innerText = "⚠️ رابط غير صحيح (نقص بيانات)";
+                document.getElementById('status').innerText = "⚠️ الرابط غير مكتمل";
                 document.getElementById('loader-icon').style.display = 'none';
                 return;
             }
 
             try {
-                // Add a timestamp to prevent caching issues
-                const res = await fetch(`${webAppUrl}?service=${service}&ward=${ward}&json=true&t=${Date.now()}`, {
+                const res = await fetch(`${webAppUrl}?service=${service}&ward=${ward}&json=true&cache=${Date.now()}`, {
                     method: 'GET', mode: 'cors', redirect: 'follow'
                 });
                 const data = await res.json();
                 
                 if (data && !data.error) {
                     dutyData = data;
-                    document.getElementById('status').innerText = "جاهز للدخول ✅";
+                    document.getElementById('status').innerText = "تم تحديث البيانات ✅";
                 } else {
-                    document.getElementById('status').innerText = "لا يوجد خفر حالياً 📅";
-                    console.log("API Error:", data.error);
+                    document.getElementById('status').innerText = "لا يوجد خفر مسجل حالياً 📅";
                 }
             } catch (e) {
                 document.getElementById('status').innerText = "وضع المعاينة (اضغط دخول)";
-                console.warn("Offline/Fetch error:", e);
             }
             document.getElementById('loader-icon').style.display = 'none';
         }
 
         function unlock() {
             const pass = document.getElementById('pw').value;
-            // Default to '1234' only if connection failed and we are in offline/test mode
             const correct = dutyData ? dutyData.password.toString() : "1234";
 
             if (pass === correct) {
@@ -152,32 +159,28 @@
                     document.getElementById('service-display').innerText = dutyData.resident.serviceArabic;
                     document.getElementById('name-display').innerText = dutyData.resident.name;
                     document.getElementById('phone-display').innerText = dutyData.resident.phone;
-                    document.getElementById('time-display').innerText = dutyData.timestamp;
-                    document.getElementById('call-btn').href = "tel:" + dutyData.resident.phone;
+                    document.getElementById('time-stamp').innerText = dutyData.timestamp;
+                    document.getElementById('call-link').href = "tel:" + dutyData.resident.phone;
                     
                     if (dutyData.whatsappDigits) {
-                        const waBtn = document.getElementById('wa-btn');
-                        waBtn.style.display = 'flex';
-                        waBtn.href = "https://wa.me/" + dutyData.whatsappDigits;
+                        const wa = document.getElementById('wa-link');
+                        wa.style.display = 'flex';
+                        wa.href = "https://wa.me/" + dutyData.whatsappDigits;
                     }
                 } else {
-                    // Placeholder data if Google Script couldn't be reached
-                    document.getElementById('name-display').innerText = "نموذج تجريبي";
-                    document.getElementById('service-display').innerText = "لم يتم جلب البيانات";
+                    document.getElementById('name-display').innerText = "فشل في جلب البيانات";
                 }
                 
                 document.getElementById('lock-screen').style.display = 'none';
                 document.getElementById('main-content').style.display = 'block';
             } else {
-                alert("الرمز خطأ ❌");
+                alert("رمز الدخول غير صحيح ❌");
                 document.getElementById('pw').value = "";
             }
         }
 
-        // Allow pressing "Enter" to unlock
-        document.getElementById('pw').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') unlock();
-        });
+        // Trigger unlock on keyboard Enter
+        document.getElementById('pw').addEventListener('keypress', (e) => { if (e.key === 'Enter') unlock(); });
 
         init();
     </script>
