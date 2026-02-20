@@ -12,14 +12,29 @@
       --text: #ffffff;
       --text-dim: #bbbbbb;
       --success: #25D366;
+      --error: #d63031;
     }
-    * { box-sizing: border-box; }
+
+    * { box-sizing: border-box; transition: all 0.3s ease; }
+
     body { 
       margin: 0; padding: 20px; 
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
       background-color: var(--bg); color: var(--text);
       display: flex; justify-content: center; align-items: center; min-height: 100vh;
     }
+
+    /* Loading Spinner */
+    .spinner {
+      width: 20px; height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      display: inline-block; margin-left: 10px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     .container {
       width: 100%; max-width: 450px;
       background: var(--card-bg);
@@ -29,6 +44,7 @@
       box-shadow: 0 20px 40px rgba(0,0,0,0.5);
       border: 1px solid #333;
     }
+
     .badge {
       display: inline-block;
       padding: 8px 20px;
@@ -39,7 +55,9 @@
       margin-bottom: 15px;
       font-weight: bold;
     }
+
     h1 { font-size: 2rem; margin: 10px 0; color: var(--text); }
+
     .contact-info {
       background: #282828;
       padding: 24px;
@@ -47,6 +65,7 @@
       margin: 30px 0;
       border: 1px solid #383838;
     }
+
     .phone-num { 
       font-size: 1.8rem; 
       direction: ltr; 
@@ -55,7 +74,9 @@
       color: var(--accent); 
       font-weight: 800; 
     }
+
     .btn-group { display: flex; gap: 14px; }
+
     .btn {
       flex: 1;
       padding: 18px;
@@ -63,13 +84,13 @@
       text-decoration: none;
       font-weight: bold;
       font-size: 1.1rem;
-      transition: all 0.2s ease;
       display: flex; align-items: center; justify-content: center; gap: 10px;
       border: none;
       cursor: pointer;
     }
+
     .btn:active { transform: scale(0.96); }
-    .btn:disabled { background: #444; cursor: not-allowed; opacity: 0.6; }
+    .btn:disabled { background: #444; cursor: not-allowed; opacity: 0.7; }
     .btn-call { background: var(--accent); color: white; }
     .btn-wa { background: var(--success); color: white; display: none; }
     
@@ -80,15 +101,18 @@
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       z-index: 1000; padding: 20px;
     }
+
     .pw-box { width: 100%; max-width: 340px; text-align: center; }
+
     input {
       width: 100%; padding: 18px; border-radius: 16px; border: 2px solid #333;
       background: #1e1e1e; color: white; font-size: 1.4rem; text-align: center; 
-      margin: 25px 0; transition: border-color 0.3s;
+      margin: 25px 0;
     }
+
     input:focus { border-color: var(--accent); outline: none; }
     
-    #main-content { display: none; }
+    #main-content { display: none; width: 100%; max-width: 450px; }
   </style>
 </head>
 <body>
@@ -97,9 +121,16 @@
     <div class="pw-box">
       <div style="font-size: 3rem; margin-bottom: 10px;">🛡️</div>
       <h2 style="margin-bottom:8px;">دخول المصرح لهم</h2>
-      <p style="color:#888;">الرجاء إدخال رمز التحقق لعرض بيانات الطبيب</p>
+      <p id="status-text" style="color:#888;">جاري التحقق من الاتصال بالخادم...</p>
+      
       <input type="password" id="pw" pattern="[0-9]*" inputmode="numeric" placeholder="••••">
-      <button id="unlock-btn" onclick="unlock()" class="btn btn-call" disabled>جاري التحميل...</button>
+      
+      <button id="unlock-btn" onclick="unlock()" class="btn btn-call" disabled>
+        <span class="spinner" id="loader"></span>
+        <span id="btn-text">جاري التحميل...</span>
+      </button>
+
+      <p id="error-msg" style="color: var(--error); margin-top: 15px; display: none; font-size: 0.9rem;"></p>
     </div>
   </div>
 
