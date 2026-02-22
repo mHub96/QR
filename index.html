@@ -1,52 +1,83 @@
-<!DOCTYPE html>
-<html dir="rtl" lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <link rel="preconnect" href="https://script.google.com">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>On-Call Pro 🇮🇶</title>
-    
-    <style>
-        :root {
-            --primary: #007aff;
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://script.google.com">
+    <link rel="dns-prefetch" href="https://script.google.com">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>On-Call System</title>
+    <title>On-Call Pro</title>
+
+<style>
+:root {
+--primary: #007aff;
+            --success: #34c759;
+            --bg-dark: #0a0a0c;
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.12);
             --success: #25D366;
             --bg: #000000;
             --glass: rgba(255, 255, 255, 0.05);
             --border: rgba(255, 255, 255, 0.1);
-        }
+}
 
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
 
-        body {
-            margin: 0; padding: 0;
+body {
+margin: 0; padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 122, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(52, 199, 89, 0.05) 0%, transparent 50%);
             font-family: -apple-system, system-ui, sans-serif;
             background: var(--bg);
-            color: white;
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; overflow: hidden;
-        }
+color: white;
+display: flex; justify-content: center; align-items: center;
+min-height: 100vh; overflow: hidden;
+}
 
+        /* Animated Ambient Light */
+        body::after {
+            content: ""; position: absolute; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            opacity: 0.05; pointer-events: none; z-index: -1;
+        /* Animated Mesh Background */
         .mesh {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: 
                 radial-gradient(at 0% 0%, rgba(0, 122, 255, 0.2) 0px, transparent 50%),
                 radial-gradient(at 100% 100%, rgba(37, 211, 102, 0.1) 0px, transparent 50%);
             z-index: -1; filter: blur(40px);
-        }
+}
 
+        .glass-card {
+            width: 92%; max-width: 400px;
         .container {
             width: 90%; max-width: 380px;
             padding: 40px 30px;
-            background: var(--glass);
+background: var(--glass);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px; padding: 40px 28px;
+            text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            animation: slideUp 0.7s cubic-bezier(0.23, 1, 0.32, 1);
             backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--border);
             border-radius: 40px;
             box-shadow: 0 40px 80px rgba(0,0,0,0.5);
             text-align: center;
             transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+}
 
-        .icon-box {
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Modern Icon Box */
+.icon-box {
+            width: 74px; height: 74px; background: rgba(255,255,255,0.04);
+            border-radius: 22px; display: flex; align-items: center;
+            justify-content: center; margin: 0 auto 20px; font-size: 2.4rem;
+            border: 1px solid var(--glass-border);
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
             width: 85px; height: 85px;
             margin: 0 auto 25px;
             background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
@@ -54,12 +85,25 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 2.8rem;
             border: 1px solid var(--border);
-        }
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
 
-        h2 { font-weight: 700; font-size: 1.7rem; margin-bottom: 10px; }
+        h2 { margin: 0 0 8px; font-weight: 700; font-size: 1.6rem; letter-spacing: -0.5px; }
+        #status { font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-bottom: 30px; min-height: 1.2rem; }
+        h2 { font-weight: 700; font-size: 1.7rem; margin-bottom: 10px; letter-spacing: -1px; }
         #status { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 35px; }
 
-        input[type="password"] {
+        /* The "Tesla" Input Style */
+        .input-group {
+            position: relative; margin-bottom: 25px;
+        }
+
+input[type="password"] {
+            width: 100%; height: 65px; background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border); border-radius: 20px;
+            color: white; font-size: 2rem; text-align: center;
+            margin-bottom: 20px; outline: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 8px;
             width: 100%; height: 70px;
             background: rgba(255,255,255,0.03);
             border: 1px solid var(--border);
@@ -68,26 +112,51 @@
             letter-spacing: 12px; transition: 0.3s;
         }
 
-        input:focus { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+        input:focus {
+            background: rgba(255,255,255,0.07);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px var(--primary);
+}
+        input:focus { border-color: var(--primary); background: rgba(0,0,0,0.4); box-shadow: 0 0 0 4px rgba(0,122,255,0.1); }
 
-        button {
+button {
+            width: 100%; height: 62px; background: var(--primary);
+            color: white; border: none; border-radius: 20px;
+            font-size: 1.15rem; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
             width: 100%; height: 65px;
             background: white; color: black;
             border: none; border-radius: 22px;
             font-size: 1.1rem; font-weight: 700;
             cursor: pointer; transition: 0.2s;
-        }
+}
+        button:disabled { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.2); cursor: not-allowed; }
+        button:active:not(:disabled) { transform: scale(0.96); opacity: 0.9; }
 
+        /* Results UI */
         button:disabled { background: #222; color: #555; }
+        button:active { transform: scale(0.96); }
 
-        .badge {
+        /* Content UI Styling */
+.badge {
+            display: inline-block; padding: 6px 16px; background: rgba(0,122,255,0.15);
+            color: var(--primary); border-radius: 10px; font-size: 0.85rem;
+            font-weight: 700; margin-bottom: 12px; border: 1px solid rgba(0,122,255,0.2);
             background: var(--primary); color: white;
             padding: 6px 14px; border-radius: 12px;
             font-size: 0.75rem; font-weight: 800;
             display: inline-block; margin-bottom: 15px;
-        }
+}
+        .name-title { font-size: 2rem; margin: 0 0 25px; font-weight: 800; color: #fff; }
+        .info-row { background: rgba(0,0,0,0.3); padding: 24px; border-radius: 24px; margin-bottom: 28px; border: 1px solid var(--glass-border); }
+        .phone-val { font-size: 1.9rem; font-weight: 800; color: #fff; direction: ltr; display: block; letter-spacing: 1px; }
+        
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .btn-action { padding: 18px; border-radius: 18px; text-decoration: none; color: white; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1rem; transition: transform 0.2s; }
+        .btn-action:active { transform: scale(0.95); }
 
-        .name-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 30px; }
+        .name-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 30px; letter-spacing: -1px; }
 
         .info-card {
             background: rgba(255,255,255,0.03);
@@ -96,6 +165,7 @@
             margin-bottom: 30px;
         }
 
+        .phone-label { font-size: 0.7rem; text-transform: uppercase; color: rgba(255,255,255,0.3); display: block; margin-bottom: 10px; letter-spacing: 1px; }
         .phone-val { font-size: 1.8rem; font-weight: 800; direction: ltr; display: block; color: var(--primary); }
 
         .btn-action {
@@ -108,105 +178,117 @@
         .btn-call { background: #1a1a1a; border: 1px solid var(--border); }
         .btn-wa { background: var(--success); }
 
+        /* Animations */
         @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-8px);} 75% {transform: translateX(8px);} }
         .shake { animation: shake 0.4s ease; }
-    </style>
+
+        /* Spinner */
+        .spin { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: rot 0.8s linear infinite; }
+        .spin { width: 20px; height: 20px; border: 3px solid rgba(0,0,0,0.1); border-top-color: black; border-radius: 50%; animation: rot 0.8s linear infinite; }
+@keyframes rot { to { transform: rotate(360deg); } }
+        
+        /* Shake Animation */
+        .shake { animation: shake 0.4s ease-in-out; }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
+</style>
 </head>
 <body>
 
+    <div id="lock-screen" class="glass-card">
+        <div class="icon-box">🩺</div>
+        <h2>دخول المصرح لهم</h2>
     <div class="mesh"></div>
 
     <div id="lock-screen" class="container">
-        <div class="icon-box">🇮🇶</div>
+        <div class="icon-box">💬</div>
         <h2>دخول النظام</h2>
-        <p id="status">جاري تأمين الاتصال...</p>
-        <input type="password" id="pw" inputmode="numeric" placeholder="••••">
-        <button id="unlock-btn" onclick="unlock()" disabled>دخول</button>
-    </div>
+<p id="status">جاري تأمين الاتصال...</p>
 
-    <div id="main-content" class="container" style="display:none;">
-        <div class="badge" id="service-display">SERVICE</div>
-        <h1 class="name-title" id="name-display">...</h1>
-        <div class="info-card">
-            <span style="font-size: 0.7rem; color: rgba(255,255,255,0.3);">رقم الهاتف المباشر</span>
-            <span class="phone-val" id="phone-display">...</span>
+        <input type="password" id="pw" inputmode="numeric" placeholder="••••">
+        <div class="input-group">
+            <input type="password" id="pw" inputmode="numeric" placeholder="••••">
         </div>
+
+<button id="unlock-btn" onclick="unlock()" disabled>
+            <span id="btn-loader" class="spin" style="display:none;"></span>
+            <span id="btn-loader" class="spin" style="display:none; margin-left: 10px;"></span>
+<span id="btn-text">جاري التحميل...</span>
+</button>
+</div>
+
+    <div id="main-content" class="glass-card" style="display:none;">
+    <div id="main-content" class="container" style="display:none;">
+<div class="badge" id="service-display">SERVICE</div>
+<h1 class="name-title" id="name-display">...</h1>
+
+        <div class="info-row">
+            <span style="font-size: 0.8rem; color: rgba(255,255,255,0.4); display: block; margin-bottom: 8px;">رقم الهاتف</span>
+        <div class="info-card">
+            <span class="phone-label">رقم الهاتف المباشر</span>
+<span class="phone-val" id="phone-display">...</span>
+</div>
+
+        <div class="actions">
+            <a href="#" id="call-link" class="btn-action" style="background: var(--primary); box-shadow: 0 10px 20px rgba(0,122,255,0.2);">📞 اتصال</a>
+            <a href="#" id="wa-link" class="btn-action" style="background: var(--success); box-shadow: 0 10px 20px rgba(52,199,89,0.2); display:none;">💬 واتساب</a>
         <div style="display: flex; gap: 12px;">
             <a href="#" id="call-link" class="btn-action btn-call">📞 اتصال</a>
             <a href="#" id="wa-link" class="btn-action btn-wa" style="display:none;">💬 واتساب</a>
-        </div>
-        <p id="time-stamp" style="margin-top:35px; font-size:0.65rem; opacity:0.2; direction:ltr;"></p>
-    </div>
-
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const service = urlParams.get('service');
-        const ward = urlParams.get('ward');
+</div>
+        <p id="time-stamp" style="margin-top:30px; font-size:0.75rem; opacity:0.3; direction:ltr;"></p>
         
-        // Ensure this matches your latest DEPLOYED Web App URL
-        const scriptUrl = "https://script.google.com/macros/s/AKfycbwyMCq_hD6onVuH0Pkvs9aKm32ohekevAZYrIO-hqWgAHKcciOZbpjGeLy7MaLVOWsIVA/exec";
+        <p id="time-stamp" style="margin-top:35px; font-size:0.65rem; opacity:0.2; direction:ltr;"></p>
+</div>
 
-        let dutyData = null;
+<script>
+@@ -148,15 +182,14 @@ <h1 class="name-title" id="name-display">...</h1>
+}
 
-        async function loadData() {
-            if (!service || !ward) {
-                document.getElementById('status').innerText = "⚠️ الرابط غير مكتمل";
-                return;
-            }
+try {
+                // Parallel fetch started as soon as the script runs
+const response = await fetch(`${scriptUrl}?service=${service}&ward=${ward}&json=true&t=${Date.now()}`);
+const data = await response.json();
 
-            try {
-                const response = await fetch(`${scriptUrl}?service=${service}&ward=${ward}&json=true&t=${Date.now()}`);
-                const data = await response.json();
-                
-                if (data && !data.error) {
-                    dutyData = data;
+if (data && !data.error) {
+dutyData = data;
+                    document.getElementById('status').innerText = "متصل بالسيرفر ✅";
                     document.getElementById('status').innerText = "تم تأمين الاتصال ✅";
-                    document.getElementById('unlock-btn').disabled = false;
-                } else {
+} else {
                     document.getElementById('status').innerText = "لا يوجد خفر مسجل حالياً";
-                }
-            } catch (error) {
-                document.getElementById('status').innerText = "وضع الأوفلاين - تحقق من النشر";
-            }
-        }
+                    document.getElementById('status').innerText = "لا يوجد بيانات حالياً";
+}
+} catch (error) {
+document.getElementById('status').innerText = "وضع الأوفلاين";
+@@ -172,13 +205,15 @@ <h1 class="name-title" id="name-display">...</h1>
+const correct = dutyData ? dutyData.password.toString() : "1234";
 
-        function unlock() {
-            const input = document.getElementById('pw');
-            const pass = input.value;
-            
-            // Note: Since we separated GET (Lookup), the password check is done locally 
-            // against your defined CONFIG.PASSWORD value (usually "1234")
-            if (pass === "1234") { 
-                document.getElementById('lock-screen').style.display = 'none';
+if (pass === correct) {
                 showUI();
-            } else {
-                document.getElementById('lock-screen').classList.add('shake');
-                setTimeout(() => document.getElementById('lock-screen').classList.remove('shake'), 400);
-                input.value = "";
-            }
-        }
+                const container = document.getElementById('lock-screen');
+                container.style.opacity = '0';
+                container.style.transform = 'scale(0.9)';
+                setTimeout(showUI, 300);
+} else {
+                const card = document.getElementById('lock-screen');
+                card.classList.add('shake');
+                setTimeout(() => card.classList.remove('shake'), 400);
+                const container = document.getElementById('lock-screen');
+                container.classList.add('shake');
+                setTimeout(() => container.classList.remove('shake'), 400);
+input.value = "";
+                input.focus();
+}
+}
 
-        function showUI() {
-            if (dutyData) {
-                // Compatible with new flat JSON structure
-                document.getElementById('service-display').innerText = dutyData.serviceAr || service;
-                document.getElementById('name-display').innerText = dutyData.name;
-                document.getElementById('phone-display').innerText = dutyData.phone;
-                document.getElementById('call-link').href = "tel:" + dutyData.phone;
-                document.getElementById('time-stamp').innerText = new Date().toLocaleString('ar-IQ');
-                
-                if (dutyData.whatsappDigits) {
-                    const wa = document.getElementById('wa-link');
-                    wa.style.display = 'flex';
-                    wa.href = "https://wa.me/" + dutyData.whatsappDigits;
-                }
-            }
+@@ -197,7 +232,10 @@ <h1 class="name-title" id="name-display">...</h1>
+}
+}
+document.getElementById('lock-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
             const main = document.getElementById('main-content');
             main.style.display = 'block';
+            main.style.opacity = '0';
             setTimeout(() => main.style.opacity = '1', 50);
-        }
+}
 
-        loadData();
-    </script>
-</body>
-</html>
+document.getElementById('pw').addEventListener('keypress', (e) => {
