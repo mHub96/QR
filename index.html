@@ -6,95 +6,164 @@
     <title>On-Call Pro</title>
     <style>
         :root {
-            --primary: #007aff;
-            --success: #25D366;
-            --bg: #000000;
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
+            --ios-blue: #007AFF;
+            --ios-bg: #000000;
+            --card-bg: rgba(28, 28, 30, 0.7); /* iOS Dark Mode Card */
+            --glass: rgba(255, 255, 255, 0.1);
+            --text-main: #FFFFFF;
+            --text-secondary: #8E8E93;
+            --input-bg: #2C2C2E; /* High contrast for dropdowns */
         }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
         body {
             margin: 0; padding: 0;
-            font-family: -apple-system, system-ui, sans-serif;
-            background: var(--bg); color: white;
+            background: var(--ios-bg);
+            color: var(--text-main);
             display: flex; justify-content: center; align-items: center;
-            min-height: 100vh; overflow: hidden;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at top right, #1c1c1e, #000000);
         }
-        .mesh {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(at 0% 0%, rgba(0, 122, 255, 0.2) 0px, transparent 50%),
-                        radial-gradient(at 100% 100%, rgba(37, 211, 102, 0.1) 0px, transparent 50%);
-            z-index: -1; filter: blur(40px);
+
+        /* Abstract iOS Background Blobs */
+        .bg-blob {
+            position: fixed; width: 300px; height: 300px;
+            background: var(--ios-blue);
+            filter: blur(100px); opacity: 0.15; z-index: -1;
+            border-radius: 50%;
         }
+
         .container {
-            width: 90%; max-width: 380px; padding: 40px 30px;
-            background: var(--glass); backdrop-filter: blur(30px);
-            border: 1px solid var(--border); border-radius: 40px;
+            width: 90%; max-width: 400px;
+            padding: 30px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 35px; /* iOS Squircle */
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
             text-align: center;
         }
-        .icon-box { width: 85px; height: 85px; margin: 0 auto 25px; background: rgba(255,255,255,0.05); border-radius: 28px; display: flex; align-items: center; justify-content: center; font-size: 2.8rem; border: 1px solid var(--border); }
-        h2 { font-weight: 700; font-size: 1.7rem; margin-bottom: 10px; }
-        #status { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 35px; }
-        
-        /* Unified Form Styles */
-        select, input[type="password"] {
-            width: 100%; height: 70px; background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border); border-radius: 22px;
-            color: white; font-size: 1.2rem; text-align: center; margin-bottom: 15px;
-            appearance: none; -webkit-appearance: none;
+
+        h2 { font-weight: 600; font-size: 1.5rem; letter-spacing: -0.5px; margin-bottom: 5px; }
+        #status { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 30px; }
+
+        /* FIXED DROPDOWNS & INPUTS FOR CONTRAST */
+        select, input {
+            width: 100%;
+            padding: 18px;
+            margin-bottom: 15px;
+            background: var(--input-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            color: white !important;
+            font-size: 1rem;
+            appearance: none;
+            cursor: pointer;
         }
-        input[type="password"] { font-size: 2.5rem; letter-spacing: 12px; }
-        
+
+        /* Force PC Dropdown Options to be visible */
+        select option {
+            background-color: #1c1c1e;
+            color: white;
+            padding: 10px;
+        }
+
+        input[type="password"] {
+            text-align: center;
+            font-size: 2rem;
+            letter-spacing: 15px;
+        }
+
         button {
-            width: 100%; height: 65px; background: white; color: black;
-            border: none; border-radius: 22px; font-size: 1.1rem; font-weight: 700;
-            cursor: pointer; margin-top: 10px;
+            width: 100%;
+            padding: 18px;
+            background: var(--ios-blue);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: all 0.2s ease;
         }
-        button:disabled { background: #222; color: #555; }
-        .badge { background: var(--primary); color: white; padding: 6px 14px; border-radius: 12px; font-size: 0.75rem; font-weight: 800; display: inline-block; margin-bottom: 15px; }
-        .name-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 30px; }
-        .info-card { background: rgba(255,255,255,0.03); padding: 25px; border-radius: 30px; border: 1px solid var(--border); margin-bottom: 30px; }
-        .phone-val { font-size: 1.8rem; font-weight: 800; direction: ltr; display: block; color: var(--primary); }
-        .btn-action { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 20px; border-radius: 22px; text-decoration: none; color: white; font-weight: 700; flex: 1; }
-        .btn-call { background: #1a1a1a; border: 1px solid var(--border); }
-        .btn-wa { background: var(--success); }
-        .hidden { display: none; }
+
+        button:active { transform: scale(0.97); opacity: 0.8; }
+        button:disabled { background: #3a3a3c; color: #8e8e93; }
+
+        /* Lookup Result UI */
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .name-label { font-size: 2.2rem; font-weight: 700; color: white; margin: 10px 0; }
+        .service-badge {
+            background: rgba(0, 122, 255, 0.2);
+            color: var(--ios-blue);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+        .action-btn {
+            flex: 1;
+            padding: 15px;
+            border-radius: 15px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .call { background: white; color: black; }
+        .wa { background: #25D366; color: white; }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
-    <div class="mesh"></div>
+    <div class="bg-blob" style="top: -100px; right: -100px;"></div>
+    <div class="bg-blob" style="bottom: -100px; left: -100px; background: #5856D6;"></div>
 
     <div id="entry-screen" class="container">
-        <div class="icon-box">🛡️</div>
-        <h2 id="entry-title">System Access</h2>
-        <p id="status">Securing Connection...</p>
-        <div id="login-form">
-            <input type="password" id="pw" inputmode="numeric" placeholder="••••">
-            <button id="entry-btn" onclick="handleEntry()" disabled>Enter</button>
-        </div>
+        <div style="font-size: 3rem; margin-bottom: 20px;">👤</div>
+        <h2 id="entry-title">Resident Portal</h2>
+        <p id="status">Secure Link Verified</p>
+        <input type="password" id="pw" inputmode="numeric" placeholder="••••" maxlength="4">
+        <button id="entry-btn" onclick="handleEntry()" disabled>Continue</button>
     </div>
 
     <div id="lookup-view" class="container hidden">
-        <div class="badge" id="service-display">SERVICE</div>
-        <h1 class="name-title" id="name-display">...</h1>
+        <div id="service-display" class="service-badge">SERVICE</div>
+        <div id="name-display" class="name-label">Loading...</div>
         <div class="info-card">
-            <span style="font-size: 0.7rem; color: rgba(255,255,255,0.3);">CONTACT NUMBER</span>
-            <span class="phone-val" id="phone-display">...</span>
+            <div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 5px;">DIRECT CONTACT</div>
+            <div id="phone-display" style="font-size: 1.4rem; font-weight: 600; letter-spacing: 1px;">-</div>
         </div>
-        <div style="display: flex; gap: 12px;">
-            <a href="#" id="call-link" class="btn-action btn-call">📞 Call</a>
-            <a href="#" id="wa-link" class="btn-action btn-wa" style="display:none;">💬 WhatsApp</a>
+        <div class="btn-row">
+            <a href="#" id="call-link" class="action-btn call"><span>📞</span> Call</a>
+            <a href="#" id="wa-link" class="action-btn wa" style="display:none;"><span>💬</span> WhatsApp</a>
         </div>
-        <p id="time-stamp" style="margin-top:35px; font-size:0.65rem; opacity:0.2; direction:ltr;"></p>
+        <p id="time-stamp" style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 25px; opacity: 0.5;"></p>
     </div>
 
     <div id="register-view" class="container hidden">
-        <div class="badge">REGISTRATION</div>
-        <h2>On-Call Registry</h2>
-        <p id="reg-status" style="font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 25px;">Select your section and name</p>
+        <div class="service-badge">REGISTRY</div>
+        <h2>Daily Duty</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">Update today's on-call resident</p>
         
         <select id="spec-select" onchange="toggleNameSection()">
-            <option value="">-- Select Specialty --</option>
+            <option value="">Choose Specialty</option>
             <option value="NS">Neuro</option>
             <option value="CT">Thoracic</option>
             <option value="GS">Surgery</option>
@@ -102,7 +171,7 @@
             <option value="ENT">ENT</option>
             <option value="H">Cardio</option>
             <option value="D">DeathCertificates</option>
-            <option value="OP">OP Anestheisa</option>
+            <option value="OP">OP Anesthesia</option>
             <option value="ICU">ICU Anesthesia</option>
             <option value="R">Radio</option>
             <option value="ON">Onco</option>
