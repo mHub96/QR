@@ -137,92 +137,28 @@
         };
 
         // PREPARATION LOGIC
-        async function prepareLookup() {
-            try {
-                const response = await fetch(`${scriptUrl}?service=${service}&ward=${ward || service}&json=true&t=${Date.now()}`);
-                serverData = await response.json();
-                if (serverData && !serverData.error) {
-                    document.getElementById('status').innerText = "Connection Secured ✅";
-                    document.getElementById('entry-btn').disabled = false;
-                } else {
-                    document.getElementById('status').innerText = "No data found for today";
-                }
-            } catch (e) { document.getElementById('status').innerText = "Offline Mode"; }
-        }
+<script>
+async function submitRegistration() {
+    const btn = document.getElementById('submit-btn');
+    btn.innerText = "Saving...";
+    btn.disabled = true;
 
-        async function prepareRegister() {
-            document.getElementById('status').innerText = "Fetching Doctor List...";
-            try {
-                const response = await fetch(`${scriptUrl}?action=getNames`);
-                const names = await response.json();
-                const dropdown = document.getElementById('name-list');
-                dropdown.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
-                document.getElementById('status').innerText = "Ready ✅";
-                document.getElementById('entry-btn').disabled = false;
-            } catch (e) { document.getElementById('status').innerText = "Error loading list"; }
-        }
+    const specialty = document.getElementById('spec-select').value;
+    const name = document.getElementById('name-list').value;
 
-        // ENTRY LOGIC
-        function handleEntry() {
-            const pass = document.getElementById('pw').value;
-            const correct = (serverData && serverData.password) ? serverData.password.toString() : "1234";
-            
-            if (pass === correct) {
-                document.getElementById('entry-screen').style.display = 'none';
-                if (mode === 'register') {
-                    document.getElementById('register-view').classList.remove('hidden');
-                } else {
-                    showLookupUI();
-                }
-            } else {
-                alert("Incorrect Password");
-            }
-        }
+    // JSONP call instead of POST
+    function handleResponse(data) {
+        alert(data === "Success ✅" ? "Duty Updated Successfully ✅" : data.error || data);
+        btn.innerText = "Confirm Duty";
+        btn.disabled = false;
+    }
 
-        // LOOKUP UI
-        function showLookupUI() {
-            if (serverData) {
-                document.getElementById('service-display').innerText = serverData.resident.serviceArabic;
-                document.getElementById('name-display').innerText = serverData.resident.name;
-                document.getElementById('phone-display').innerText = serverData.resident.phone;
-                document.getElementById('time-stamp').innerText = serverData.timestamp;
-                document.getElementById('call-link').href = "tel:" + serverData.resident.phone;
-                if (serverData.whatsappDigits) {
-                    const wa = document.getElementById('wa-link');
-                    wa.style.display = 'flex';
-                    wa.href = "https://wa.me/" + serverData.whatsappDigits;
-                }
-            }
-            document.getElementById('lookup-view').classList.remove('hidden');
-        }
+    // Create script tag for JSONP
+    const script = document.createElement('script');
+    script.src = `${scriptUrl}?action=submitDuty&specialty=${encodeURIComponent(specialty)}&name=${encodeURIComponent(name)}&callback=handleResponse&t=${Date.now()}`;
+    document.body.appendChild(script);
+}
+</script>
 
-        // REGISTRATION UI
-        function toggleNameSection() {
-            const spec = document.getElementById('spec-select').value;
-            document.getElementById('name-section').classList.toggle('hidden', !spec);
-        }
-
-        async function submitRegistration() {
-            const btn = document.getElementById('submit-btn');
-            btn.innerText = "Saving...";
-            btn.disabled = true;
-
-            const payload = {
-                action: "submitDuty",
-                specialty: document.getElementById('spec-select').value,
-                name: document.getElementById('name-list').value
-            };
-
-            try {
-                const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify(payload) });
-                const result = await res.json();
-                alert(result === "Success ✅" ? "Duty Updated Successfully ✅" : result);
-            } catch (e) {
-                alert("Duty Updated Successfully ✅");
-            }
-            btn.innerText = "Confirm Duty";
-            btn.disabled = false;
-        }
-    </script>
 </body>
 </html>
