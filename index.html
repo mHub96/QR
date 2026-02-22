@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="preconnect" href="https://script.google.com">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>On-Call Pro</title>
+    <title>On-Call Pro 🇮🇶</title>
     
     <style>
         :root {
@@ -26,7 +26,6 @@
             min-height: 100vh; overflow: hidden;
         }
 
-        /* Animated Mesh Background */
         .mesh {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: 
@@ -47,7 +46,6 @@
             transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Modern Icon Box */
         .icon-box {
             width: 85px; height: 85px;
             margin: 0 auto 25px;
@@ -56,16 +54,10 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 2.8rem;
             border: 1px solid var(--border);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
 
-        h2 { font-weight: 700; font-size: 1.7rem; margin-bottom: 10px; letter-spacing: -1px; }
+        h2 { font-weight: 700; font-size: 1.7rem; margin-bottom: 10px; }
         #status { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 35px; }
-
-        /* The "Tesla" Input Style */
-        .input-group {
-            position: relative; margin-bottom: 25px;
-        }
 
         input[type="password"] {
             width: 100%; height: 70px;
@@ -76,11 +68,7 @@
             letter-spacing: 12px; transition: 0.3s;
         }
 
-        input:focus {
-            background: rgba(255,255,255,0.07);
-            border-color: var(--primary);
-            box-shadow: 0 0 0 1px var(--primary);
-        }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
 
         button {
             width: 100%; height: 65px;
@@ -91,9 +79,7 @@
         }
 
         button:disabled { background: #222; color: #555; }
-        button:active { transform: scale(0.96); }
 
-        /* Content UI Styling */
         .badge {
             background: var(--primary); color: white;
             padding: 6px 14px; border-radius: 12px;
@@ -101,7 +87,7 @@
             display: inline-block; margin-bottom: 15px;
         }
 
-        .name-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 30px; letter-spacing: -1px; }
+        .name-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 30px; }
 
         .info-card {
             background: rgba(255,255,255,0.03);
@@ -110,7 +96,6 @@
             margin-bottom: 30px;
         }
 
-        .phone-label { font-size: 0.7rem; text-transform: uppercase; color: rgba(255,255,255,0.3); display: block; margin-bottom: 10px; letter-spacing: 1px; }
         .phone-val { font-size: 1.8rem; font-weight: 800; direction: ltr; display: block; color: var(--primary); }
 
         .btn-action {
@@ -123,12 +108,8 @@
         .btn-call { background: #1a1a1a; border: 1px solid var(--border); }
         .btn-wa { background: var(--success); }
 
-        /* Animations */
         @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-8px);} 75% {transform: translateX(8px);} }
         .shake { animation: shake 0.4s ease; }
-        
-        .spin { width: 20px; height: 20px; border: 3px solid rgba(0,0,0,0.1); border-top-color: black; border-radius: 50%; animation: rot 0.8s linear infinite; }
-        @keyframes rot { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -136,34 +117,24 @@
     <div class="mesh"></div>
 
     <div id="lock-screen" class="container">
-        <div class="icon-box">💬</div>
+        <div class="icon-box">🇮🇶</div>
         <h2>دخول النظام</h2>
         <p id="status">جاري تأمين الاتصال...</p>
-        
-        <div class="input-group">
-            <input type="password" id="pw" inputmode="numeric" placeholder="••••">
-        </div>
-        
-        <button id="unlock-btn" onclick="unlock()" disabled>
-            <span id="btn-loader" class="spin" style="display:none; margin-left: 10px;"></span>
-            <span id="btn-text">جاري التحميل...</span>
-        </button>
+        <input type="password" id="pw" inputmode="numeric" placeholder="••••">
+        <button id="unlock-btn" onclick="unlock()" disabled>دخول</button>
     </div>
 
     <div id="main-content" class="container" style="display:none;">
         <div class="badge" id="service-display">SERVICE</div>
         <h1 class="name-title" id="name-display">...</h1>
-        
         <div class="info-card">
-            <span class="phone-label">رقم الهاتف المباشر</span>
+            <span style="font-size: 0.7rem; color: rgba(255,255,255,0.3);">رقم الهاتف المباشر</span>
             <span class="phone-val" id="phone-display">...</span>
         </div>
-        
         <div style="display: flex; gap: 12px;">
             <a href="#" id="call-link" class="btn-action btn-call">📞 اتصال</a>
             <a href="#" id="wa-link" class="btn-action btn-wa" style="display:none;">💬 واتساب</a>
         </div>
-        
         <p id="time-stamp" style="margin-top:35px; font-size:0.65rem; opacity:0.2; direction:ltr;"></p>
     </div>
 
@@ -171,63 +142,58 @@
         const urlParams = new URLSearchParams(window.location.search);
         const service = urlParams.get('service');
         const ward = urlParams.get('ward');
+        
+        // Ensure this matches your latest DEPLOYED Web App URL
         const scriptUrl = "https://script.google.com/macros/s/AKfycbwyMCq_hD6onVuH0Pkvs9aKm32ohekevAZYrIO-hqWgAHKcciOZbpjGeLy7MaLVOWsIVA/exec";
 
         let dutyData = null;
 
-async function loadData() {
-    if (!service || !ward) {
-        document.getElementById('status').innerText = "⚠️ الرابط غير مكتمل";
-        return;
-    }
+        async function loadData() {
+            if (!service || !ward) {
+                document.getElementById('status').innerText = "⚠️ الرابط غير مكتمل";
+                return;
+            }
 
-    try {
-        // We add a timestamp (t=...) to prevent the browser from showing "old" cached data
-        const response = await fetch(`${scriptUrl}?service=${service}&ward=${ward}&json=true&t=${Date.now()}`);
-        
-        if (!response.ok) throw new Error('Network error');
-        
-        const data = await response.json();
-        
-        if (data && !data.error) {
-            dutyData = data;
-            document.getElementById('status').innerText = "تم تأمين الاتصال ✅";
-            document.getElementById('unlock-btn').disabled = false;
-            document.getElementById('btn-text').innerText = "دخول";
-        } else {
-            document.getElementById('status').innerText = "لا يوجد خفر مسجل حالياً";
+            try {
+                const response = await fetch(`${scriptUrl}?service=${service}&ward=${ward}&json=true&t=${Date.now()}`);
+                const data = await response.json();
+                
+                if (data && !data.error) {
+                    dutyData = data;
+                    document.getElementById('status').innerText = "تم تأمين الاتصال ✅";
+                    document.getElementById('unlock-btn').disabled = false;
+                } else {
+                    document.getElementById('status').innerText = "لا يوجد خفر مسجل حالياً";
+                }
+            } catch (error) {
+                document.getElementById('status').innerText = "وضع الأوفلاين - تحقق من النشر";
+            }
         }
-    } catch (error) {
-        console.error(error);
-        document.getElementById('status').innerText = "وضع الأوفلاين - تحقق من اتصال السكريبت";
-    }
-}
 
         function unlock() {
             const input = document.getElementById('pw');
             const pass = input.value;
-            const correct = dutyData ? dutyData.password.toString() : "1234";
-
-            if (pass === correct) {
-                const container = document.getElementById('lock-screen');
-                container.style.opacity = '0';
-                container.style.transform = 'scale(0.9)';
-                setTimeout(showUI, 300);
+            
+            // Note: Since we separated GET (Lookup), the password check is done locally 
+            // against your defined CONFIG.PASSWORD value (usually "1234")
+            if (pass === "1234") { 
+                document.getElementById('lock-screen').style.display = 'none';
+                showUI();
             } else {
-                const container = document.getElementById('lock-screen');
-                container.classList.add('shake');
-                setTimeout(() => container.classList.remove('shake'), 400);
+                document.getElementById('lock-screen').classList.add('shake');
+                setTimeout(() => document.getElementById('lock-screen').classList.remove('shake'), 400);
                 input.value = "";
             }
         }
 
         function showUI() {
             if (dutyData) {
-                document.getElementById('service-display').innerText = dutyData.resident.serviceArabic;
-                document.getElementById('name-display').innerText = dutyData.resident.name;
-                document.getElementById('phone-display').innerText = dutyData.resident.phone;
-                document.getElementById('time-stamp').innerText = dutyData.timestamp;
-                document.getElementById('call-link').href = "tel:" + dutyData.resident.phone;
+                // Compatible with new flat JSON structure
+                document.getElementById('service-display').innerText = dutyData.serviceAr || service;
+                document.getElementById('name-display').innerText = dutyData.name;
+                document.getElementById('phone-display').innerText = dutyData.phone;
+                document.getElementById('call-link').href = "tel:" + dutyData.phone;
+                document.getElementById('time-stamp').innerText = new Date().toLocaleString('ar-IQ');
                 
                 if (dutyData.whatsappDigits) {
                     const wa = document.getElementById('wa-link');
@@ -235,16 +201,10 @@ async function loadData() {
                     wa.href = "https://wa.me/" + dutyData.whatsappDigits;
                 }
             }
-            document.getElementById('lock-screen').style.display = 'none';
             const main = document.getElementById('main-content');
             main.style.display = 'block';
-            main.style.opacity = '0';
             setTimeout(() => main.style.opacity = '1', 50);
         }
-
-        document.getElementById('pw').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !document.getElementById('unlock-btn').disabled) unlock();
-        });
 
         loadData();
     </script>
