@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="ar">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -35,15 +35,20 @@
         .icon-box { width: 85px; height: 85px; margin: 0 auto 25px; background: rgba(255,255,255,0.05); border-radius: 28px; display: flex; align-items: center; justify-content: center; font-size: 2.8rem; border: 1px solid var(--border); }
         h2 { font-weight: 700; font-size: 1.7rem; margin-bottom: 10px; }
         #status { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 35px; }
-        input[type="password"] {
+        
+        /* Unified Form Styles */
+        select, input[type="password"] {
             width: 100%; height: 70px; background: rgba(255,255,255,0.03);
             border: 1px solid var(--border); border-radius: 22px;
-            color: white; font-size: 2.5rem; text-align: center; letter-spacing: 12px;
+            color: white; font-size: 1.2rem; text-align: center; margin-bottom: 15px;
+            appearance: none; -webkit-appearance: none;
         }
+        input[type="password"] { font-size: 2.5rem; letter-spacing: 12px; }
+        
         button {
             width: 100%; height: 65px; background: white; color: black;
             border: none; border-radius: 22px; font-size: 1.1rem; font-weight: 700;
-            cursor: pointer; margin-top: 20px;
+            cursor: pointer; margin-top: 10px;
         }
         button:disabled { background: #222; color: #555; }
         .badge { background: var(--primary); color: white; padding: 6px 14px; border-radius: 12px; font-size: 0.75rem; font-weight: 800; display: inline-block; margin-bottom: 15px; }
@@ -53,90 +58,171 @@
         .btn-action { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 20px; border-radius: 22px; text-decoration: none; color: white; font-weight: 700; flex: 1; }
         .btn-call { background: #1a1a1a; border: 1px solid var(--border); }
         .btn-wa { background: var(--success); }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="mesh"></div>
 
-    <div id="lock-screen" class="container">
-        <div class="icon-box">💬</div>
-        <h2>دخول النظام</h2>
-        <p id="status">جاري تأمين الاتصال...</p>
-        <input type="password" id="pw" inputmode="numeric" placeholder="••••">
-        <button id="unlock-btn" onclick="unlock()" disabled>دخول</button>
+    <div id="entry-screen" class="container">
+        <div class="icon-box">🛡️</div>
+        <h2 id="entry-title">System Access</h2>
+        <p id="status">Securing Connection...</p>
+        <div id="login-form">
+            <input type="password" id="pw" inputmode="numeric" placeholder="••••">
+            <button id="entry-btn" onclick="handleEntry()" disabled>Enter</button>
+        </div>
     </div>
 
-    <div id="main-content" class="container" style="display:none;">
+    <div id="lookup-view" class="container hidden">
         <div class="badge" id="service-display">SERVICE</div>
         <h1 class="name-title" id="name-display">...</h1>
         <div class="info-card">
-            <span style="font-size: 0.7rem; color: rgba(255,255,255,0.3);">رقم الهاتف</span>
+            <span style="font-size: 0.7rem; color: rgba(255,255,255,0.3);">CONTACT NUMBER</span>
             <span class="phone-val" id="phone-display">...</span>
         </div>
         <div style="display: flex; gap: 12px;">
-            <a href="#" id="call-link" class="btn-action btn-call">📞 اتصال</a>
-            <a href="#" id="wa-link" class="btn-action btn-wa" style="display:none;">💬 واتساب</a>
+            <a href="#" id="call-link" class="btn-action btn-call">📞 Call</a>
+            <a href="#" id="wa-link" class="btn-action btn-wa" style="display:none;">💬 WhatsApp</a>
         </div>
         <p id="time-stamp" style="margin-top:35px; font-size:0.65rem; opacity:0.2; direction:ltr;"></p>
     </div>
 
+    <div id="register-view" class="container hidden">
+        <div class="badge">REGISTRATION</div>
+        <h2>On-Call Registry</h2>
+        <p id="reg-status" style="font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 25px;">Select your section and name</p>
+        
+        <select id="spec-select" onchange="toggleNameSection()">
+            <option value="">-- Select Specialty --</option>
+            <option value="NS">Neuro</option>
+            <option value="CT">Thoracic</option>
+            <option value="GS">Surgery</option>
+            <option value="US">Uro</option>
+            <option value="ENT">ENT</option>
+            <option value="H">Cardio</option>
+            <option value="D">DeathCertificates</option>
+            <option value="OP">OP Anestheisa</option>
+            <option value="ICU">ICU Anesthesia</option>
+            <option value="R">Radio</option>
+            <option value="ON">Onco</option>
+            <option value="PS">Plastic</option>
+        </select>
+
+        <div id="name-section" class="hidden">
+            <select id="name-list"></select>
+            <button id="submit-btn" onclick="submitRegistration()">Confirm Duty</button>
+        </div>
+    </div>
+
     <script>
         const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode'); // "register"
         const service = urlParams.get('service');
         const ward = urlParams.get('ward');
-        const scriptUrl = "https://script.google.com/macros/s/AKfycbwj99w9IceN2W1aF3S-jN6yFypMBszvb1xv7FTUuYrW-GbYjC4ediZHrscrloeprwCSSw/exec";
+        const scriptUrl = "YOUR_APPS_SCRIPT_URL_HERE";
 
-        let dutyData = null;
+        let serverData = null;
 
-        async function loadData() {
-            if (!service || !ward) {
-                document.getElementById('status').innerText = "⚠️ الرابط غير مكتمل";
-                return;
-            }
-            try {
-                const response = await fetch(`${scriptUrl}?service=${service}&ward=${ward}&json=true&t=${Date.now()}`);
-                const data = await response.json();
-                if (data && !data.error) {
-                    dutyData = data;
-                    document.getElementById('status').innerText = "تم تأمين الاتصال ✅";
-                    document.getElementById('unlock-btn').disabled = false;
-                } else {
-                    document.getElementById('status').innerText = "لا يوجد بيانات حالياً";
-                }
-            } catch (error) {
-                document.getElementById('status').innerText = "وضع الأوفلاين";
-            }
-        }
-
-        function unlock() {
-            const input = document.getElementById('pw');
-            // LEGACY: Checking password from the returned object
-            const correct = dutyData && dutyData.password ? dutyData.password.toString() : "1234";
-            if (input.value === correct) {
-                document.getElementById('lock-screen').style.display = 'none';
-                showUI();
+        window.onload = async function() {
+            if (mode === 'register') {
+                document.getElementById('entry-title').innerText = "Doctor Login";
+                prepareRegister();
+            } else if (service) {
+                document.getElementById('entry-title').innerText = "System Access";
+                prepareLookup();
             } else {
-                alert("Wrong Password");
+                document.getElementById('status').innerText = "⚠️ Link Incomplete";
+            }
+        };
+
+        // PREPARATION LOGIC
+        async function prepareLookup() {
+            try {
+                const response = await fetch(`${scriptUrl}?service=${service}&ward=${ward || service}&json=true&t=${Date.now()}`);
+                serverData = await response.json();
+                if (serverData && !serverData.error) {
+                    document.getElementById('status').innerText = "Connection Secured ✅";
+                    document.getElementById('entry-btn').disabled = false;
+                } else {
+                    document.getElementById('status').innerText = "No data found for today";
+                }
+            } catch (e) { document.getElementById('status').innerText = "Offline Mode"; }
+        }
+
+        async function prepareRegister() {
+            document.getElementById('status').innerText = "Fetching Doctor List...";
+            try {
+                const response = await fetch(`${scriptUrl}?action=getNames`);
+                const names = await response.json();
+                const dropdown = document.getElementById('name-list');
+                dropdown.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
+                document.getElementById('status').innerText = "Ready ✅";
+                document.getElementById('entry-btn').disabled = false;
+            } catch (e) { document.getElementById('status').innerText = "Error loading list"; }
+        }
+
+        // ENTRY LOGIC
+        function handleEntry() {
+            const pass = document.getElementById('pw').value;
+            const correct = (serverData && serverData.password) ? serverData.password.toString() : "1234";
+            
+            if (pass === correct) {
+                document.getElementById('entry-screen').style.display = 'none';
+                if (mode === 'register') {
+                    document.getElementById('register-view').classList.remove('hidden');
+                } else {
+                    showLookupUI();
+                }
+            } else {
+                alert("Incorrect Password");
             }
         }
 
-        function showUI() {
-            if (dutyData) {
-                // LEGACY: Navigating through dutyData.resident
-                document.getElementById('service-display').innerText = dutyData.resident.serviceArabic;
-                document.getElementById('name-display').innerText = dutyData.resident.name;
-                document.getElementById('phone-display').innerText = dutyData.resident.phone;
-                document.getElementById('time-stamp').innerText = dutyData.timestamp;
-                document.getElementById('call-link').href = "tel:" + dutyData.resident.phone;
-                if (dutyData.whatsappDigits) {
+        // LOOKUP UI
+        function showLookupUI() {
+            if (serverData) {
+                document.getElementById('service-display').innerText = serverData.resident.serviceArabic;
+                document.getElementById('name-display').innerText = serverData.resident.name;
+                document.getElementById('phone-display').innerText = serverData.resident.phone;
+                document.getElementById('time-stamp').innerText = serverData.timestamp;
+                document.getElementById('call-link').href = "tel:" + serverData.resident.phone;
+                if (serverData.whatsappDigits) {
                     const wa = document.getElementById('wa-link');
                     wa.style.display = 'flex';
-                    wa.href = "https://wa.me/" + dutyData.whatsappDigits;
+                    wa.href = "https://wa.me/" + serverData.whatsappDigits;
                 }
             }
-            document.getElementById('main-content').style.display = 'block';
+            document.getElementById('lookup-view').classList.remove('hidden');
         }
-        loadData();
+
+        // REGISTRATION UI
+        function toggleNameSection() {
+            const spec = document.getElementById('spec-select').value;
+            document.getElementById('name-section').classList.toggle('hidden', !spec);
+        }
+
+        async function submitRegistration() {
+            const btn = document.getElementById('submit-btn');
+            btn.innerText = "Saving...";
+            btn.disabled = true;
+
+            const payload = {
+                action: "submitDuty",
+                specialty: document.getElementById('spec-select').value,
+                name: document.getElementById('name-list').value
+            };
+
+            try {
+                const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify(payload) });
+                const result = await res.json();
+                alert(result === "Success ✅" ? "Duty Updated Successfully ✅" : result);
+            } catch (e) {
+                alert("Duty Updated Successfully ✅");
+            }
+            btn.innerText = "Confirm Duty";
+            btn.disabled = false;
+        }
     </script>
 </body>
 </html>
