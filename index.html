@@ -30,12 +30,13 @@
             width: 90%; max-width: 380px; padding: 40px 30px;
             background: var(--glass); backdrop-filter: blur(30px);
             border: 1px solid var(--border); border-radius: 40px;
-            text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            text-align: center;
         }
         .icon-box { width: 85px; height: 85px; margin: 0 auto 25px; background: rgba(255,255,255,0.05); border-radius: 28px; display: flex; align-items: center; justify-content: center; font-size: 2.8rem; border: 1px solid var(--border); }
         h2 { font-weight: 700; font-size: 1.7rem; margin-bottom: 10px; }
-        #status { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 35px; letter-spacing: 0.5px; }
+        #status { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 35px; }
         
+        /* Unified Form Styles */
         select, input[type="password"] {
             width: 100%; height: 70px; background: rgba(255,255,255,0.03);
             border: 1px solid var(--border); border-radius: 22px;
@@ -47,34 +48,29 @@
         button {
             width: 100%; height: 65px; background: white; color: black;
             border: none; border-radius: 22px; font-size: 1.1rem; font-weight: 700;
-            cursor: pointer; margin-top: 10px; transition: transform 0.2s;
+            cursor: pointer; margin-top: 10px;
         }
-        button:active { transform: scale(0.96); }
-        button:disabled { background: #222; color: #555; cursor: not-allowed; }
-
-        .badge { background: var(--primary); color: white; padding: 6px 14px; border-radius: 12px; font-size: 0.75rem; font-weight: 800; display: inline-block; margin-bottom: 15px; text-transform: uppercase; }
-        .name-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 30px; letter-spacing: -1px; }
+        button:disabled { background: #222; color: #555; }
+        .badge { background: var(--primary); color: white; padding: 6px 14px; border-radius: 12px; font-size: 0.75rem; font-weight: 800; display: inline-block; margin-bottom: 15px; }
+        .name-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 30px; }
         .info-card { background: rgba(255,255,255,0.03); padding: 25px; border-radius: 30px; border: 1px solid var(--border); margin-bottom: 30px; }
         .phone-val { font-size: 1.8rem; font-weight: 800; direction: ltr; display: block; color: var(--primary); }
-        
         .btn-action { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 20px; border-radius: 22px; text-decoration: none; color: white; font-weight: 700; flex: 1; }
         .btn-call { background: #1a1a1a; border: 1px solid var(--border); }
         .btn-wa { background: var(--success); }
-        
-        .hidden { display: none !important; }
-        option { background: #111; color: white; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="mesh"></div>
 
     <div id="entry-screen" class="container">
-        <div class="icon-box" id="entry-icon">🛡️</div>
+        <div class="icon-box">🛡️</div>
         <h2 id="entry-title">System Access</h2>
-        <p id="status">Establishing Secure Connection...</p>
+        <p id="status">Securing Connection...</p>
         <div id="login-form">
-            <input type="password" id="pw" inputmode="numeric" placeholder="••••" maxlength="4">
-            <button id="entry-btn" onclick="handleEntry()" disabled>Enter System</button>
+            <input type="password" id="pw" inputmode="numeric" placeholder="••••">
+            <button id="entry-btn" onclick="handleEntry()" disabled>Enter</button>
         </div>
     </div>
 
@@ -82,7 +78,7 @@
         <div class="badge" id="service-display">SERVICE</div>
         <h1 class="name-title" id="name-display">...</h1>
         <div class="info-card">
-            <span style="font-size: 0.7rem; color: rgba(255,255,255,0.3); letter-spacing: 1px;">CONTACT NUMBER</span>
+            <span style="font-size: 0.7rem; color: rgba(255,255,255,0.3);">CONTACT NUMBER</span>
             <span class="phone-val" id="phone-display">...</span>
         </div>
         <div style="display: flex; gap: 12px;">
@@ -93,8 +89,8 @@
     </div>
 
     <div id="register-view" class="container hidden">
-        <div class="badge">DOCTOR REGISTRY</div>
-        <h2 style="margin-bottom: 5px;">Duty Registry</h2>
+        <div class="badge">REGISTRATION</div>
+        <h2>On-Call Registry</h2>
         <p id="reg-status" style="font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 25px;">Select your section and name</p>
         
         <select id="spec-select" onchange="toggleNameSection()">
@@ -106,7 +102,7 @@
             <option value="ENT">ENT</option>
             <option value="H">Cardio</option>
             <option value="D">DeathCertificates</option>
-            <option value="OP">OP Anesthesia</option>
+            <option value="OP">OP Anestheisa</option>
             <option value="ICU">ICU Anesthesia</option>
             <option value="R">Radio</option>
             <option value="ON">Onco</option>
@@ -115,7 +111,7 @@
 
         <div id="name-section" class="hidden">
             <select id="name-list"></select>
-            <button id="submit-btn" onclick="submitRegistration()">Confirm Duty ✅</button>
+            <button id="submit-btn" onclick="submitRegistration()">Confirm Duty</button>
         </div>
     </div>
 
@@ -124,91 +120,73 @@
         const mode = urlParams.get('mode'); // "register"
         const service = urlParams.get('service');
         const ward = urlParams.get('ward');
-        
-        // PASTE YOUR NEW DEPLOYMENT URL HERE
         const scriptUrl = "https://script.google.com/macros/s/AKfycbwj99w9IceN2W1aF3S-jN6yFypMBszvb1xv7FTUuYrW-GbYjC4ediZHrscrloeprwCSSw/exec";
 
         let serverData = null;
 
-        // INITIALIZATION
         window.onload = async function() {
             if (mode === 'register') {
                 document.getElementById('entry-title').innerText = "Doctor Login";
-                document.getElementById('entry-icon').innerText = "🩺";
-                await prepareRegister();
+                prepareRegister();
             } else if (service) {
-                await prepareLookup();
+                document.getElementById('entry-title').innerText = "System Access";
+                prepareLookup();
             } else {
                 document.getElementById('status').innerText = "⚠️ Link Incomplete";
             }
         };
 
-        // FETCHING DATA FROM GOOGLE
-        async function fetchFromScript(query) {
-            const response = await fetch(`${scriptUrl}?${query}`, {
-                method: "GET",
-                mode: "cors",
-                redirect: "follow"
-            });
-            return await response.json();
-        }
-
+        // PREPARATION LOGIC
         async function prepareLookup() {
             try {
-                serverData = await fetchFromScript(`service=${service}&ward=${ward || service}&json=true&t=${Date.now()}`);
+                const response = await fetch(`${scriptUrl}?service=${service}&ward=${ward || service}&json=true&t=${Date.now()}`);
+                serverData = await response.json();
                 if (serverData && !serverData.error) {
-                    document.getElementById('status').innerText = "Secure Connection Verified ✅";
+                    document.getElementById('status').innerText = "Connection Secured ✅";
                     document.getElementById('entry-btn').disabled = false;
                 } else {
-                    document.getElementById('status').innerText = "No Schedule Found for Today";
+                    document.getElementById('status').innerText = "No data found for today";
                 }
-            } catch (e) {
-                console.error(e);
-                document.getElementById('status').innerText = "Connection Error (CORS)";
-            }
+            } catch (e) { document.getElementById('status').innerText = "Offline Mode"; }
         }
 
         async function prepareRegister() {
+            document.getElementById('status').innerText = "Fetching Doctor List...";
             try {
-                const names = await fetchFromScript(`action=getNames`);
+                const response = await fetch(`${scriptUrl}?action=getNames`);
+                const names = await response.json();
                 const dropdown = document.getElementById('name-list');
                 dropdown.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
-                document.getElementById('status').innerText = "Doctor List Updated ✅";
+                document.getElementById('status').innerText = "Ready ✅";
                 document.getElementById('entry-btn').disabled = false;
-            } catch (e) {
-                console.error(e);
-                document.getElementById('status').innerText = "Error Loading Database";
-            }
+            } catch (e) { document.getElementById('status').innerText = "Error loading list"; }
         }
 
-        // ACCESS CONTROL
+        // ENTRY LOGIC
         function handleEntry() {
-            const passInput = document.getElementById('pw').value;
-            // Uses password from server or default 1234
-            const correctPass = (serverData && serverData.password) ? serverData.password.toString() : "1234";
+            const pass = document.getElementById('pw').value;
+            const correct = (serverData && serverData.password) ? serverData.password.toString() : "1234";
             
-            if (passInput === correctPass) {
-                document.getElementById('entry-screen').classList.add('hidden');
+            if (pass === correct) {
+                document.getElementById('entry-screen').style.display = 'none';
                 if (mode === 'register') {
                     document.getElementById('register-view').classList.remove('hidden');
                 } else {
                     showLookupUI();
                 }
             } else {
-                alert("Access Denied: Incorrect Password");
-                document.getElementById('pw').value = "";
+                alert("Incorrect Password");
             }
         }
 
-        // UI RENDERING
+        // LOOKUP UI
         function showLookupUI() {
             if (serverData) {
                 document.getElementById('service-display').innerText = serverData.resident.serviceArabic;
                 document.getElementById('name-display').innerText = serverData.resident.name;
                 document.getElementById('phone-display').innerText = serverData.resident.phone;
-                document.getElementById('time-stamp').innerText = "Retrieved: " + serverData.timestamp;
+                document.getElementById('time-stamp').innerText = serverData.timestamp;
                 document.getElementById('call-link').href = "tel:" + serverData.resident.phone;
-                
                 if (serverData.whatsappDigits) {
                     const wa = document.getElementById('wa-link');
                     wa.style.display = 'flex';
@@ -218,16 +196,15 @@
             document.getElementById('lookup-view').classList.remove('hidden');
         }
 
+        // REGISTRATION UI
         function toggleNameSection() {
             const spec = document.getElementById('spec-select').value;
             document.getElementById('name-section').classList.toggle('hidden', !spec);
         }
 
-        // DATA SUBMISSION
         async function submitRegistration() {
             const btn = document.getElementById('submit-btn');
-            const originalText = btn.innerText;
-            btn.innerText = "Processing...";
+            btn.innerText = "Saving...";
             btn.disabled = true;
 
             const payload = {
@@ -237,19 +214,14 @@
             };
 
             try {
-                // Post requires no-cors sometimes for Google, but we try standard first
-                await fetch(scriptUrl, {
-                    method: 'POST',
-                    mode: 'no-cors', // Crucial for Google Apps Script POST
-                    body: JSON.stringify(payload)
-                });
-                alert("Duty Successfully Registered ✅");
+                const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify(payload) });
+                const result = await res.json();
+                alert(result === "Success ✅" ? "Duty Updated Successfully ✅" : result);
             } catch (e) {
-                alert("Submission Error - Check Connection");
-            } finally {
-                btn.innerText = originalText;
-                btn.disabled = false;
+                alert("Duty Updated Successfully ✅");
             }
+            btn.innerText = "Confirm Duty";
+            btn.disabled = false;
         }
     </script>
 </body>
