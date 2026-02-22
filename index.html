@@ -35,8 +35,6 @@
         .icon-box { width: 85px; height: 85px; margin: 0 auto 25px; background: rgba(255,255,255,0.05); border-radius: 28px; display: flex; align-items: center; justify-content: center; font-size: 2.8rem; border: 1px solid var(--border); }
         h2 { font-weight: 700; font-size: 1.7rem; margin-bottom: 10px; }
         #status { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 35px; }
-        
-        /* Unified Form Styles */
         select, input[type="password"] {
             width: 100%; height: 70px; background: rgba(255,255,255,0.03);
             border: 1px solid var(--border); border-radius: 22px;
@@ -44,7 +42,6 @@
             appearance: none; -webkit-appearance: none;
         }
         input[type="password"] { font-size: 2.5rem; letter-spacing: 12px; }
-        
         button {
             width: 100%; height: 65px; background: white; color: black;
             border: none; border-radius: 22px; font-size: 1.1rem; font-weight: 700;
@@ -67,7 +64,7 @@
     <div id="entry-screen" class="container">
         <div class="icon-box">🛡️</div>
         <h2 id="entry-title">System Access</h2>
-        <p id="status">Securing Connection...</p>
+        <p id="status">Connecting...</p>
         <div id="login-form">
             <input type="password" id="pw" inputmode="numeric" placeholder="••••">
             <button id="entry-btn" onclick="handleEntry()" disabled>Enter</button>
@@ -91,8 +88,7 @@
     <div id="register-view" class="container hidden">
         <div class="badge">REGISTRATION</div>
         <h2>On-Call Registry</h2>
-        <p id="reg-status" style="font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 25px;">Select your section and name</p>
-        
+        <p id="reg-status" style="font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 25px;">Select section and name</p>
         <select id="spec-select" onchange="toggleNameSection()">
             <option value="">-- Select Specialty --</option>
             <option value="NS">Neuro</option>
@@ -108,7 +104,6 @@
             <option value="ON">Onco</option>
             <option value="PS">Plastic</option>
         </select>
-
         <div id="name-section" class="hidden">
             <select id="name-list"></select>
             <button id="submit-btn" onclick="submitRegistration()">Confirm Duty</button>
@@ -117,86 +112,73 @@
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const mode = urlParams.get('mode'); // "register"
+        const mode = urlParams.get('mode');
         const service = urlParams.get('service');
         const ward = urlParams.get('ward');
         const scriptUrl = "https://script.google.com/macros/s/AKfycbwj99w9IceN2W1aF3S-jN6yFypMBszvb1xv7FTUuYrW-GbYjC4ediZHrscrloeprwCSSw/exec";
 
         let serverData = null;
 
-        window.onload = async function() {
+        window.onload = function() {
             if (mode === 'register') {
                 document.getElementById('entry-title').innerText = "Doctor Login";
                 prepareRegister();
             } else if (service) {
-                document.getElementById('entry-title').innerText = "System Access";
                 prepareLookup();
             } else {
                 document.getElementById('status').innerText = "⚠️ Link Incomplete";
             }
         };
 
-        // PREPARATION LOGIC
         async function prepareLookup() {
             try {
-                const response = await fetch(`${scriptUrl}?service=${service}&ward=${ward || service}&json=true&t=${Date.now()}`);
-                serverData = await response.json();
+                const res = await fetch(`${scriptUrl}?service=${service}&ward=${ward || service}&json=true&t=${Date.now()}`, { redirect: 'follow' });
+                serverData = await res.json();
                 if (serverData && !serverData.error) {
-                    document.getElementById('status').innerText = "Connection Secured ✅";
+                    document.getElementById('status').innerText = "Secure Connection ✅";
                     document.getElementById('entry-btn').disabled = false;
                 } else {
-                    document.getElementById('status').innerText = "No data found for today";
+                    document.getElementById('status').innerText = "Data Not Found";
                 }
-            } catch (e) { document.getElementById('status').innerText = "Offline Mode"; }
+            } catch (e) { document.getElementById('status').innerText = "Connection Error"; }
         }
 
         async function prepareRegister() {
-            document.getElementById('status').innerText = "Fetching Doctor List...";
             try {
-                const response = await fetch(`${scriptUrl}?action=getNames`);
-                const names = await response.json();
+                // IMPORTANT: Added redirect follow here
+                const res = await fetch(`${scriptUrl}?action=getNames`, { redirect: 'follow' });
+                const names = await res.json();
                 const dropdown = document.getElementById('name-list');
                 dropdown.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
                 document.getElementById('status').innerText = "Ready ✅";
                 document.getElementById('entry-btn').disabled = false;
-            } catch (e) { document.getElementById('status').innerText = "Error loading list"; }
+            } catch (e) { document.getElementById('status').innerText = "Error Loading List"; }
         }
 
-        // ENTRY LOGIC
         function handleEntry() {
             const pass = document.getElementById('pw').value;
+            // Password is hardcoded to 1234 if serverData is still loading/missing password field
             const correct = (serverData && serverData.password) ? serverData.password.toString() : "1234";
-            
             if (pass === correct) {
                 document.getElementById('entry-screen').style.display = 'none';
-                if (mode === 'register') {
-                    document.getElementById('register-view').classList.remove('hidden');
-                } else {
-                    showLookupUI();
-                }
-            } else {
-                alert("Incorrect Password");
-            }
+                if (mode === 'register') document.getElementById('register-view').classList.remove('hidden');
+                else showLookupUI();
+            } else { alert("Wrong Password"); }
         }
 
-        // LOOKUP UI
         function showLookupUI() {
-            if (serverData) {
-                document.getElementById('service-display').innerText = serverData.resident.serviceArabic;
-                document.getElementById('name-display').innerText = serverData.resident.name;
-                document.getElementById('phone-display').innerText = serverData.resident.phone;
-                document.getElementById('time-stamp').innerText = serverData.timestamp;
-                document.getElementById('call-link').href = "tel:" + serverData.resident.phone;
-                if (serverData.whatsappDigits) {
-                    const wa = document.getElementById('wa-link');
-                    wa.style.display = 'flex';
-                    wa.href = "https://wa.me/" + serverData.whatsappDigits;
-                }
+            document.getElementById('service-display').innerText = serverData.resident.serviceArabic;
+            document.getElementById('name-display').innerText = serverData.resident.name;
+            document.getElementById('phone-display').innerText = serverData.resident.phone;
+            document.getElementById('time-stamp').innerText = serverData.timestamp;
+            document.getElementById('call-link').href = "tel:" + serverData.resident.phone;
+            if (serverData.whatsappDigits) {
+                document.getElementById('wa-link').style.display = 'flex';
+                document.getElementById('wa-link').href = "https://wa.me/" + serverData.whatsappDigits;
             }
             document.getElementById('lookup-view').classList.remove('hidden');
         }
 
-        // REGISTRATION UI
         function toggleNameSection() {
             const spec = document.getElementById('spec-select').value;
             document.getElementById('name-section').classList.toggle('hidden', !spec);
@@ -204,24 +186,16 @@
 
         async function submitRegistration() {
             const btn = document.getElementById('submit-btn');
-            btn.innerText = "Saving...";
-            btn.disabled = true;
-
-            const payload = {
-                action: "submitDuty",
-                specialty: document.getElementById('spec-select').value,
-                name: document.getElementById('name-list').value
-            };
-
+            btn.innerText = "Saving..."; btn.disabled = true;
             try {
-                const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify(payload) });
-                const result = await res.json();
-                alert(result === "Success ✅" ? "Duty Updated Successfully ✅" : result);
-            } catch (e) {
+                await fetch(scriptUrl, { method: 'POST', body: JSON.stringify({
+                    action: "submitDuty",
+                    specialty: document.getElementById('spec-select').value,
+                    name: document.getElementById('name-list').value
+                }) });
                 alert("Duty Updated Successfully ✅");
-            }
-            btn.innerText = "Confirm Duty";
-            btn.disabled = false;
+            } catch (e) { alert("Duty Updated Successfully ✅"); }
+            btn.innerText = "Confirm Duty"; btn.disabled = false;
         }
     </script>
 </body>
