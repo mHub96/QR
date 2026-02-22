@@ -175,29 +175,33 @@
 
         let dutyData = null;
 
-        async function loadData() {
-            if (!service || !ward) {
-                document.getElementById('status').innerText = "⚠️ الرابط غير مكتمل";
-                return;
-            }
+async function loadData() {
+    if (!service || !ward) {
+        document.getElementById('status').innerText = "⚠️ الرابط غير مكتمل";
+        return;
+    }
 
-            try {
-                const response = await fetch(`${scriptUrl}?service=${service}&ward=${ward}&json=true&t=${Date.now()}`);
-                const data = await response.json();
-                
-                if (data && !data.error) {
-                    dutyData = data;
-                    document.getElementById('status').innerText = "تم تأمين الاتصال ✅";
-                } else {
-                    document.getElementById('status').innerText = "لا يوجد بيانات حالياً";
-                }
-            } catch (error) {
-                document.getElementById('status').innerText = "وضع الأوفلاين";
-            } finally {
-                document.getElementById('unlock-btn').disabled = false;
-                document.getElementById('btn-text').innerText = "دخول";
-            }
+    try {
+        // We add a timestamp (t=...) to prevent the browser from showing "old" cached data
+        const response = await fetch(`${scriptUrl}?service=${service}&ward=${ward}&json=true&t=${Date.now()}`);
+        
+        if (!response.ok) throw new Error('Network error');
+        
+        const data = await response.json();
+        
+        if (data && !data.error) {
+            dutyData = data;
+            document.getElementById('status').innerText = "تم تأمين الاتصال ✅";
+            document.getElementById('unlock-btn').disabled = false;
+            document.getElementById('btn-text').innerText = "دخول";
+        } else {
+            document.getElementById('status').innerText = "لا يوجد خفر مسجل حالياً";
         }
+    } catch (error) {
+        console.error(error);
+        document.getElementById('status').innerText = "وضع الأوفلاين - تحقق من اتصال السكريبت";
+    }
+}
 
         function unlock() {
             const input = document.getElementById('pw');
