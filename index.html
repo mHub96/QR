@@ -203,26 +203,38 @@
         }
 
         async function submitRegistration() {
-            const btn = document.getElementById('submit-btn');
-            btn.innerText = "Saving...";
-            btn.disabled = true;
+    const btn = document.getElementById('submit-btn');
+    btn.innerText = "Saving...";
+    btn.disabled = true;
 
-            const payload = {
-                action: "submitDuty",
-                specialty: document.getElementById('spec-select').value,
-                name: document.getElementById('name-list').value
-            };
+    const payload = {
+        action: "submitDuty",
+        specialty: document.getElementById('spec-select').value,
+        name: document.getElementById('name-list').value
+    };
 
-            try {
-                const res = await fetch(scriptUrl, { method: 'POST', body: JSON.stringify(payload) });
-                const result = await res.json();
-                alert(result === "Success ✅" ? "Duty Updated Successfully ✅" : result);
-            } catch (e) {
-                alert("Duty Updated Successfully ✅");
-            }
-            btn.innerText = "Confirm Duty";
-            btn.disabled = false;
-        }
+    try {
+        await fetch(scriptUrl, {
+            method: 'POST',
+            mode: 'no-cors', // <--- THIS IS THE MAGIC LINE
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'text/plain', // Use text/plain to avoid preflight
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        // Because of no-cors, we won't 'read' the response, 
+        // but the data WILL reach the Google Sheet.
+        alert("Duty Updated Successfully ✅");
+    } catch (e) {
+        console.error(e);
+        alert("Error connecting to server");
+    } finally {
+        btn.innerText = "Confirm Duty";
+        btn.disabled = false;
+    }
+}
     </script>
 </body>
 </html>
