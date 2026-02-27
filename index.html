@@ -230,24 +230,20 @@
             return;
         }
 
-        let filtered;
+let filtered;
 
-        // NEW LOGIC: If DeathCertificates (D) is chosen, show everyone
-        if (selectedSpec === "D") {
+        // Logic for OP and ICU to show all Anaesthesia (A) residents
+        if (selectedSpec === "OP" || selectedSpec === "ICU") {
+            filtered = allResidents.filter(res => res[1] === "A");
+        } 
+        // Logic for Death Certificates to show everyone
+        else if (selectedSpec === "D") {
             filtered = allResidents; 
-        } else {
-            // Otherwise, filter by the specialty code in Column B
+        } 
+        // Standard filtering for all other specialties
+        else {
             filtered = allResidents.filter(res => res[1] === selectedSpec);
         }
-
-        if (filtered.length > 0) {
-            dropdown.innerHTML = filtered.map(res => `<option value="${res[0]}">${res[0]}</option>`).join('');
-            nameSection.classList.remove('hidden');
-        } else {
-            dropdown.innerHTML = "<option value=''>No residents found</option>";
-            nameSection.classList.remove('hidden');
-        }
-    }
 
     // --- REST OF YOUR WORKING LOGIC ---
     async function prepareLookup() {
