@@ -230,8 +230,6 @@
             return;
         }
 
-        // Filter the list we already downloaded
-        const filtered = allResidents.filter(res => res[1] === selectedSpec);
         let filtered;
 
         // NEW LOGIC: If DeathCertificates (D) is chosen, show everyone
@@ -241,6 +239,15 @@
             // Otherwise, filter by the specialty code in Column B
             filtered = allResidents.filter(res => res[1] === selectedSpec);
         }
+
+        if (filtered.length > 0) {
+            dropdown.innerHTML = filtered.map(res => `<option value="${res[0]}">${res[0]}</option>`).join('');
+            nameSection.classList.remove('hidden');
+        } else {
+            dropdown.innerHTML = "<option value=''>No residents found</option>";
+            nameSection.classList.remove('hidden');
+        }
+    }
 
     // --- REST OF YOUR WORKING LOGIC ---
     async function prepareLookup() {
