@@ -230,18 +230,15 @@
             return;
         }
 
-let filtered;
+        // Filter the list we already downloaded
+        const filtered = allResidents.filter(res => res[1] === selectedSpec);
+        let filtered;
 
-        // Logic for OP and ICU to show all Anaesthesia (A) residents
-        if (selectedSpec === "OP" || selectedSpec === "ICU") {
-            filtered = allResidents.filter(res => res[1] === "A");
-        } 
-        // Logic for Death Certificates to show everyone
-        else if (selectedSpec === "D") {
+        // NEW LOGIC: If DeathCertificates (D) is chosen, show everyone
+        if (selectedSpec === "D") {
             filtered = allResidents; 
-        } 
-        // Standard filtering for all other specialties
-        else {
+        } else {
+            // Otherwise, filter by the specialty code in Column B
             filtered = allResidents.filter(res => res[1] === selectedSpec);
         }
 
