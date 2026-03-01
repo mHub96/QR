@@ -232,11 +232,15 @@
 
         let filtered;
 
-        // NEW LOGIC: If DeathCertificates (D) is chosen, show everyone
-        if (selectedSpec === "D") {
-            filtered = allResidents; 
+        // NEW LOGIC: Check for Anesthesia (OP/ICU), Death Certificates (D), or standard filter
+        if (selectedSpec === "OP" || selectedSpec === "ICU") {
+            // Show all Anesthesia residents (Code 'A')
+            filtered = allResidents.filter(res => res[1] === "A");
+        } else if (selectedSpec === "D") {
+            // Show everyone for Death Certificates
+            filtered = allResidents;
         } else {
-            // Otherwise, filter by the specialty code in Column B
+            // Otherwise, filter by the specific specialty code in Column B
             filtered = allResidents.filter(res => res[1] === selectedSpec);
         }
 
