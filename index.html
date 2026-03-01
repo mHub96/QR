@@ -206,21 +206,21 @@
         }
     };
 
-    async function prepareRegister() {
-        document.getElementById('status').innerText = "Fetching Master List...";
-        try {
-            const response = await fetch(`${scriptUrl}?action=getNames`);
-            allResidents = await response.json(); // Stores [[Name, Spec], ...]
-
+async function prepareRegister() {
+    document.getElementById('status').innerText = "Fetching Master List...";
+    try {
+        const response = await fetch(`${scriptUrl}?action=getNames`);
+        const data = await response.json(); 
+        
         // SORTING LOGIC: Sorts alphabetically by Name (index 0)
-            allResidents = data.sort((a, b) => a[0].localeCompare(b[0], 'ar'));
-            
-            document.getElementById('status').innerText = "Ready ✅";
-            document.getElementById('entry-btn').disabled = false;
-        } catch (e) { 
-            document.getElementById('status').innerText = "Offline Mode - Check Internet"; 
-        }
+        allResidents = data.sort((a, b) => a[0].localeCompare(b[0], 'ar'));
+        
+        document.getElementById('status').innerText = "Ready ✅";
+        document.getElementById('entry-btn').disabled = false;
+    } catch (e) { 
+        document.getElementById('status').innerText = "Offline Mode - Check Internet"; 
     }
+}
 
     // THIS IS THE FILTERING MAGIC - NO FETCHING HERE!
     function toggleNameSection() {
