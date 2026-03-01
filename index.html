@@ -211,6 +211,9 @@
         try {
             const response = await fetch(`${scriptUrl}?action=getNames`);
             allResidents = await response.json(); // Stores [[Name, Spec], ...]
+
+        // SORTING LOGIC: Sorts alphabetically by Name (index 0)
+            allResidents = data.sort((a, b) => a[0].localeCompare(b[0], 'ar'));
             
             document.getElementById('status').innerText = "Ready ✅";
             document.getElementById('entry-btn').disabled = false;
