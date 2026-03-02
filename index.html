@@ -293,7 +293,7 @@ async function prepareRegister() {
             if (serverData.whatsappDigits) {
                 const wa = document.getElementById('wa-link');
                 wa.style.display = 'flex';
-                wa.href = "https://wa.me/" + serverData.whatsappDigits;
+                wa.href = "whatsapp://send?phone=" + serverData.whatsappDigits;
             }
         }
         document.getElementById('lookup-view').classList.remove('hidden');
