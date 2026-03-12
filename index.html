@@ -3,184 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>On-Call Pro</title>
+    <title>Duty Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --ios-blue: #007AFF;
-            --ios-bg: #000000;
-            --card-bg: rgba(28, 28, 30, 0.7); /* iOS Dark Mode Card */
-            --glass: rgba(255, 255, 255, 0.1);
-            --text-main: #FFFFFF;
-            --text-secondary: #8E8E93;
-            --input-bg: #2C2C2E; /* High contrast for dropdowns */
+            --bg: #1a1c20;
+            --light: #2a2d34;
+            --shadow: #0d0e11;
+            --accent: #fbbf24;
+            --crimson: #e11d48;
+            --btn-grey: #33373e;
+        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #94a3b8; margin: 0; }
+
+        .embossed-card {
+            position: relative;
+            background: var(--bg);
+            border-radius: 3rem;
+            box-shadow: 20px 20px 60px var(--shadow), -10px -10px 40px var(--light);
+            z-index: 10;
         }
 
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        .breathing { animation: frameBreath 3s infinite ease-in-out; }
+        @keyframes frameBreath {
+            0%, 100% { box-shadow: 20px 20px 60px var(--shadow), -10px -10px 40px var(--light), 0 0 0px transparent; }
+            50% { box-shadow: 15px 15px 45px var(--shadow), -8px -8px 30px var(--light), 0 0 50px rgba(251, 191, 36, 0.7); }
         }
 
-        body {
-            margin: 0; padding: 0;
-            background: var(--ios-bg);
-            color: var(--text-main);
-            display: flex; justify-content: center; align-items: center;
-            min-height: 100vh;
-            background-image: radial-gradient(circle at top right, #1c1c1e, #000000);
+        .tube-container { position: absolute; inset: 0; pointer-events: none; z-index: 20; width: 100%; height: 100%; }
+        #tube-bg { fill: none; stroke: rgba(251, 191, 36, 0.03); stroke-width: 4; }
+        #tube-fluid {
+            fill: none; stroke: var(--accent); stroke-width: 5; stroke-linecap: round;
+            filter: drop-shadow(0 0 12px var(--accent));
+            stroke-dasharray: 500 1200; stroke-dashoffset: 1700;
+            opacity: 0; transition: opacity 0.4s;
         }
 
-        /* Abstract iOS Background Blobs */
-        .bg-blob {
-            position: fixed; width: 300px; height: 300px;
-            background: var(--ios-blue);
-            filter: blur(100px); opacity: 0.15; z-index: -1;
-            border-radius: 50%;
+        .loading-active #tube-fluid { opacity: 1; animation: seamlessFlow 2s linear infinite; }
+        .loading-active.breathing { animation: none !important; }
+
+        @keyframes seamlessFlow { from { stroke-dashoffset: 1700; } to { stroke-dashoffset: 0; } }
+
+        .recessed-input {
+            background: var(--bg);
+            border-radius: 1.5rem;
+            box-shadow: inset 8px 8px 16px var(--shadow), inset -4px -4px 12px var(--light);
         }
 
-        .container {
-            width: 90%; max-width: 400px;
-            padding: 30px;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 35px; /* iOS Squircle */
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            text-align: center;
+        .embossed-btn {
+            background: var(--bg);
+            border-radius: 1.5rem;
+            box-shadow: 10px 10px 20px var(--shadow), -5px -5px 15px var(--light);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: #64748b; font-weight: 800;
         }
 
-        h2 { font-weight: 600; font-size: 1.5rem; letter-spacing: -0.5px; margin-bottom: 5px; }
-        #status { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 30px; }
+        .btn-register { background: var(--btn-grey); color: #e2e8f0; }
 
-        /* FIXED DROPDOWNS & INPUTS FOR CONTRAST */
-        select, input {
-            width: 100%;
-            padding: 18px;
-            margin-bottom: 15px;
-            background: var(--input-bg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
+        .fetched-active {
+            background: var(--accent) !important;
+            color: #1a1c20 !important;
+            box-shadow: 0 0 25px rgba(251, 191, 36, 0.6), -5px -5px 15px var(--light) !important;
+        }
+
+        .crimson-warning {
+            background: var(--crimson) !important;
             color: white !important;
-            font-size: 1rem;
-            appearance: none;
-            cursor: pointer;
+            animation: shake 0.4s both;
         }
 
-        /* Force PC Dropdown Options to be visible */
-        select option {
-            background-color: #1c1c1e;
-            color: white;
-            padding: 10px;
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        input[type="password"] {
-            text-align: center;
-            font-size: 2rem;
-            letter-spacing: 15px;
-        }
-
-        button {
-            width: 100%;
-            padding: 18px;
-            background: var(--ios-blue);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            font-size: 1rem;
-            font-weight: 600;
-            margin-top: 10px;
-            transition: all 0.2s ease;
-        }
-
-        button:active { transform: scale(0.97); opacity: 0.8; }
-        button:disabled { background: #3a3a3c; color: #8e8e93; }
-
-        /* Lookup Result UI */
-        .info-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 20px;
-            margin: 20px 0;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .name-label { font-size: 2.2rem; font-weight: 700; color: white; margin: 10px 0; }
-        .service-badge {
-            background: rgba(0, 122, 255, 0.2);
-            color: var(--ios-blue);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .btn-row { display: flex; gap: 10px; margin-top: 20px; }
-        .action-btn {
-            flex: 1;
-            padding: 15px;
-            border-radius: 15px;
-            text-decoration: none;
-            font-weight: 600;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .call { background: white; color: black; }
-        .wa { background: #25D366; color: white; }
-
+        #shield { position: fixed; inset: 0; background: var(--bg); z-index: 100; transition: opacity 0.5s; }
         .hidden { display: none !important; }
     </style>
 </head>
-<body>
-    <div class="bg-blob" style="top: -100px; right: -100px;"></div>
-    <div class="bg-blob" style="bottom: -100px; left: -100px; background: #5856D6;"></div>
+<body class="flex items-center justify-center min-h-screen p-4">
 
-    <div id="entry-screen" class="container">
-        <div style="font-size: 3rem; margin-bottom: 20px;">👤</div>
-        <h2 id="entry-title">Resident Portal</h2>
-        <p id="status">Secure Link Verified</p>
-        <input type="password" id="pw" inputmode="numeric" placeholder="••••" maxlength="4">
-        <button id="entry-btn" onclick="handleEntry()" disabled>Continue</button>
-    </div>
+    <div id="shield"></div>
 
-    <div id="lookup-view" class="container hidden">
-        <div id="service-display" class="service-badge">SERVICE</div>
-        <div id="name-display" class="name-label">Loading...</div>
-        <div class="info-card">
-            <div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 5px;">DIRECT CONTACT</div>
-            <div id="phone-display" style="font-size: 1.4rem; font-weight: 600; letter-spacing: 1px;">-</div>
-        </div>
-        <div class="btn-row">
-            <a href="#" id="call-link" class="action-btn call"><span>📞</span> Call</a>
-            <a href="#" id="wa-link" class="action-btn wa" style="display:none;"><span>💬</span> WhatsApp</a>
-        </div>
-        <p id="time-stamp" style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 25px; opacity: 0.5;"></p>
-    </div>
-
-    <div id="register-view" class="container hidden">
-        <div class="service-badge">REGISTRY</div>
-        <h2>Daily Duty</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 20px;">Update today's on-call resident</p>
+    <div id="main-card" class="w-full max-w-sm embossed-card breathing p-10 transition-all duration-700">
         
-        <select id="spec-select" onchange="toggleNameSection()">
-            <option value="">Choose Specialty</option>
-            <option value="NS">Neuro</option>
-            <option value="CT">Thoracic</option>
-            <option value="GS">Surgery</option>
-            <option value="US">Uro</option>
-            <option value="ENT">ENT</option>
-            <option value="H">Cardio</option>
-            <option value="D">DeathCertificates</option>
-            <option value="OP">OP Anesthesia</option>
-            <option value="ICU">ICU Anesthesia</option>
-            <option value="R">Radio</option>
-            <option value="ON">Onco</option>
-            <option value="PS">Plastic</option>
-        </select>
+        <svg class="tube-container" viewBox="0 0 384 512" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <rect id="tube-bg" x="2" y="2" width="380" height="508" rx="48" />
+            <rect id="tube-fluid" x="2" y="2" width="380" height="508" rx="48" />
+        </svg>
 
-        <div id="name-section" class="hidden">
-            <select id="name-list"></select>
-            <button id="submit-btn" onclick="submitRegistration()">Confirm Duty</button>
+        <div id="login-view">
+            <div class="text-center mb-10">
+                <h1 class="text-white text-2xl font-extrabold tracking-tight">On-Call Portal</h1>
+                <p id="status-text" class="text-[0.6rem] mt-2 uppercase font-bold tracking-[0.3em] text-amber-500/60">Securing Link...</p>
+            </div>
+            <div class="space-y-8">
+                <div class="recessed-input p-2">
+                    <input type="password" id="pw" inputmode="numeric" maxlength="4" placeholder="••••" 
+                        class="w-full bg-transparent py-5 text-center text-4xl tracking-[1rem] text-amber-500 outline-none">
+                </div>
+                <button id="entry-btn" onclick="handleEntry()" class="embossed-btn w-full py-6 tracking-widest uppercase">Authorize</button>
+            </div>
+        </div>
+
+        <div id="register-view" class="hidden space-y-6">
+            <h2 class="text-white text-xl font-extrabold text-center mb-2">Duty Update 🇮🇶</h2>
+            <div class="recessed-input p-2">
+                <select id="spec-select" onchange="toggleNameSection()" class="w-full bg-transparent p-4 text-slate-300 font-bold outline-none appearance-none">
+                    <option value="" class="bg-[#1a1c20]">SPECIALTY</option>
+                    <option value="NS" class="bg-[#1a1c20]">Neurosurgery</option>
+                    <option value="CT" class="bg-[#1a1c20]">Cardiothoracic Surgery</option>
+                    <option value="GS" class="bg-[#1a1c20]">General Surgery</option>
+                    <option value="US" class="bg-[#1a1c20]">Urosurgery</option>
+                    <option value="ENT" class="bg-[#1a1c20]">ENT</option>
+                    <option value="H" class="bg-[#1a1c20]">Cardiology</option>
+                    <option value="D" class="bg-[#1a1c20]">Death Certificates</option>
+                    <option value="OP" class="bg-[#1a1c20]">Anaesthesia (OP)</option>
+                    <option value="ICU" class="bg-[#1a1c20]">Anaesthesia (ICU)</option>
+                    <option value="R" class="bg-[#1a1c20]">Radiology</option>
+                    <option value="ON" class="bg-[#1a1c20]">Oncology</option>
+                    <option value="PS" class="bg-[#1a1c20]">Plastic Surgery</option>
+                </select>
+            </div>
+            <div id="name-section" class="hidden space-y-6">
+                <div class="recessed-input p-2">
+                    <select id="name-list" class="w-full bg-transparent p-4 text-slate-300 outline-none"></select>
+                </div>
+                <button id="submit-btn" onclick="submitRegistration()" class="embossed-btn btn-register w-full py-6 uppercase tracking-widest">
+                    UPDATE
+                </button>
+            </div>
+        </div>
+
+        <div id="lookup-view" class="hidden text-center">
+            <div class="recessed-input inline-block px-10 py-3 mb-6">
+                <span id="service-display" class="text-amber-500 text-[0.8rem] font-black tracking-[0.2em] uppercase">SERVICE</span>
+            </div>
+            <h2 id="name-display" class="text-white text-3xl font-extrabold mb-1">...</h2>
+            <p id="phone-display" class="text-slate-500 font-bold text-lg mb-8">-</p>
+            
+            <div class="flex flex-row gap-2 w-full">
+                <a href="#" id="call-link" class="embossed-btn flex-1 py-5 px-1 uppercase tracking-tighter whitespace-nowrap text-[0.75rem] sm:text-base">
+                    📞 SIM Call
+                </a>
+                <a href="#" id="wa-link" class="hidden flex-1 py-5 px-1 bg-emerald-500/20 border border-emerald-500 text-emerald-500 rounded-[1.5rem] font-extrabold shadow-lg tracking-tighter whitespace-nowrap text-[0.75rem] sm:text-base">
+                    💬 WhatsApp
+                </a>
+            </div>
+            
+            <p id="time-stamp" class="text-[0.55rem] text-slate-600 mt-10 font-mono tracking-widest uppercase"></p>
         </div>
     </div>
 
@@ -188,142 +162,140 @@
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('mode');
     const service = urlParams.get('service');
-    const ward = urlParams.get('ward');
     const scriptUrl = "https://script.google.com/macros/s/AKfycbwj99w9IceN2W1aF3S-jN6yFypMBszvb1xv7FTUuYrW-GbYjC4ediZHrscrloeprwCSSw/exec";
 
     let serverData = null;
-    let allResidents = []; // <--- Hidden local storage for the name list
+    let allResidents = [];
 
     window.onload = async function() {
-        if (mode === 'register') {
-            document.getElementById('entry-title').innerText = "Doctor Login";
-            prepareRegister();
-        } else if (service) {
-            document.getElementById('entry-title').innerText = "System Access";
-            prepareLookup();
-        } else {
-            document.getElementById('status').innerText = "⚠️ Link Incomplete";
+        setTimeout(() => { 
+            const shield = document.getElementById('shield');
+            if(shield) {
+                shield.style.opacity = '0'; 
+                setTimeout(() => shield.remove(), 500);
+            }
+        }, 300);
+
+        const status = document.getElementById('status-text');
+        const entryBtn = document.getElementById('entry-btn');
+
+        // Construct the EXACT date string used by your Scheduler
+        const now = new Date();
+        const d = String(now.getDate()).padStart(2, '0');
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const y = now.getFullYear();
+        const todayStr = `${d}/${m}/${y}`;
+
+        try {
+            if (mode === 'register') {
+                const res = await fetch(`${scriptUrl}?action=getNames`);
+                allResidents = (await res.json()).sort((a,b) => a[0].localeCompare(b[0], 'ar'));
+                entryBtn.classList.add('fetched-active');
+                status.innerText = "READY 🇮🇶";
+            } else if (service) {
+                // We send the date string directly so the server doesn't have to guess
+                const res = await fetch(`${scriptUrl}?service=${encodeURIComponent(service)}&date=${todayStr}&json=true&t=${Date.now()}`);
+                serverData = await res.json();
+                
+                if (serverData && serverData.resident) {
+                    entryBtn.classList.add('fetched-active');
+                    status.innerText = "READY 🇮🇶";
+                } else {
+                    status.innerText = "No Duty Found: " + todayStr;
+                    status.style.color = "#e11d48";
+                }
+            } else {
+                status.innerText = "Link Incomplete";
+            }
+        } catch (e) { 
+            status.innerText = "Offline Mode"; 
+            console.error(e);
         }
     };
 
-async function prepareRegister() {
-    document.getElementById('status').innerText = "Fetching Master List...";
-    try {
-        const response = await fetch(`${scriptUrl}?action=getNames`);
-        const data = await response.json(); 
-        
-        // SORTING LOGIC: Sorts alphabetically by Name (index 0)
-        allResidents = data.sort((a, b) => a[0].localeCompare(b[0], 'ar'));
-        
-        document.getElementById('status').innerText = "Ready ✅";
-        document.getElementById('entry-btn').disabled = false;
-    } catch (e) { 
-        document.getElementById('status').innerText = "Offline Mode - Check Internet"; 
-    }
-}
-
-    // THIS IS THE FILTERING MAGIC - NO FETCHING HERE!
+    // --- REMAINDER OF YOUR FUNCTIONS (toggleNameSection, handleEntry, etc.) STAY EXACTLY THE SAME ---
+    
     function toggleNameSection() {
-        const selectedSpec = document.getElementById('spec-select').value;
-        const nameSection = document.getElementById('name-section');
-        const dropdown = document.getElementById('name-list');
-
-        if (!selectedSpec) {
-            nameSection.classList.add('hidden');
-            return;
-        }
-
-        let filtered;
-
-        // NEW LOGIC: Check for Anesthesia (OP/ICU), Death Certificates (D), or standard filter
-        if (selectedSpec === "OP" || selectedSpec === "ICU") {
-            // Show all Anesthesia residents (Code 'A')
-            filtered = allResidents.filter(res => res[1] === "A");
-        } else if (selectedSpec === "D") {
-            // Show everyone for Death Certificates
-            filtered = allResidents;
-        } else {
-            // Otherwise, filter by the specific specialty code in Column B
-            filtered = allResidents.filter(res => res[1] === selectedSpec);
-        }
-
-        if (filtered.length > 0) {
-            dropdown.innerHTML = filtered.map(res => `<option value="${res[0]}">${res[0]}</option>`).join('');
-            nameSection.classList.remove('hidden');
-        } else {
-            dropdown.innerHTML = "<option value=''>No residents found</option>";
-            nameSection.classList.remove('hidden');
-        }
-    }
-
-    // --- REST OF YOUR WORKING LOGIC ---
-    async function prepareLookup() {
-        try {
-            const response = await fetch(`${scriptUrl}?service=${service}&ward=${ward || service}&json=true&t=${Date.now()}`);
-            serverData = await response.json();
-            if (serverData && !serverData.error) {
-                document.getElementById('status').innerText = "Connection Secured ✅";
-                document.getElementById('entry-btn').disabled = false;
-            } else {
-                document.getElementById('status').innerText = "No data found for today";
-            }
-        } catch (e) { document.getElementById('status').innerText = "Offline Mode"; }
+        const val = document.getElementById('spec-select').value;
+        const list = document.getElementById('name-list');
+        if (!val) { document.getElementById('name-section').classList.add('hidden'); return; }
+        let filtered = (val === "OP" || val === "ICU") ? allResidents.filter(r => r[1] === "A") : (val === "D" ? allResidents : allResidents.filter(r => r[1] === val));
+        list.innerHTML = `<option value="">-- Who's On-Call Today? --</option>` + filtered.map(r => `<option value="${r[0]}" class="bg-[#1a1c20]">${r[0]}</option>`).join('');
+        document.getElementById('name-section').classList.remove('hidden');
     }
 
     function handleEntry() {
-        const pass = document.getElementById('pw').value;
+        const pinField = document.getElementById('pw');
+        const pin = pinField.value;
+        const btn = document.getElementById('entry-btn');
         const correct = (serverData && serverData.password) ? serverData.password.toString() : "1234";
-        if (pass === correct) {
-            document.getElementById('entry-screen').style.display = 'none';
-            if (mode === 'register') {
-                document.getElementById('register-view').classList.remove('hidden');
-            } else {
-                showLookupUI();
-            }
-        } else { alert("Incorrect Password"); }
+        const card = document.getElementById('main-card');
+        if (pin === correct) {
+            card.style.opacity = "0";
+            setTimeout(() => {
+                document.getElementById('login-view').classList.add('hidden');
+                if (mode === 'register') { document.getElementById('register-view').classList.remove('hidden'); }
+                else { showLookupUI(); document.getElementById('lookup-view').classList.remove('hidden'); }
+                card.style.opacity = "1";
+            }, 600);
+        } else {
+            btn.classList.add('crimson-warning');
+            btn.innerText = "INCORRECT PIN!";
+            pinField.value = "";
+            setTimeout(() => { btn.classList.remove('crimson-warning'); btn.innerText = "Authorize"; }, 2000);
+        }
     }
 
     function showLookupUI() {
-        if (serverData) {
-            document.getElementById('service-display').innerText = serverData.resident.serviceArabic;
-            document.getElementById('name-display').innerText = serverData.resident.name;
-            document.getElementById('phone-display').innerText = serverData.resident.phone;
-            document.getElementById('time-stamp').innerText = serverData.timestamp;
-            document.getElementById('call-link').href = "tel:" + serverData.resident.phone;
-            if (serverData.whatsappDigits) {
-                const wa = document.getElementById('wa-link');
-                wa.style.display = 'flex';
-                wa.href = "whatsapp://send?phone=" + serverData.whatsappDigits;
-            }
+        if (!serverData || !serverData.resident) return;
+        const res = serverData.resident;
+        document.getElementById('service-display').innerText = res.serviceArabic || service;
+        document.getElementById('name-display').innerText = res.name || "Unknown";
+        document.getElementById('phone-display').innerText = res.phone || "No Number";
+        document.getElementById('time-stamp').innerText = "UPDATED: " + (serverData.timestamp || "N/A");
+        const cleanPhone = res.phone.toString().replace(/\s/g, '');
+        document.getElementById('call-link').href = "tel:" + cleanPhone;
+        if (serverData.whatsappDigits) {
+            const wa = document.getElementById('wa-link');
+            wa.classList.remove('hidden');
+            wa.href = "whatsapp://send?phone=" + serverData.whatsappDigits;
         }
-        document.getElementById('lookup-view').classList.remove('hidden');
     }
 
     async function submitRegistration() {
         const btn = document.getElementById('submit-btn');
-        btn.innerText = "Saving...";
-        btn.disabled = true;
-        const payload = {
-            action: "submitDuty",
-            specialty: document.getElementById('spec-select').value,
-            name: document.getElementById('name-list').value
-        };
+        const doctorName = document.getElementById('name-list').value;
+        const card = document.getElementById('main-card');
+        if (!doctorName) {
+            btn.classList.add('crimson-warning');
+            btn.innerText = "CHOOSE A NAME FIRST!";
+            setTimeout(() => { btn.classList.remove('crimson-warning'); btn.innerText = "UPDATE"; }, 2000);
+            return;
+        }
+        card.classList.add('loading-active');
+        btn.innerText = "UPLOADING...";
         try {
-            await fetch(scriptUrl, {
-                method: 'POST',
-                mode: 'no-cors',
-                cache: 'no-cache',
-                headers: { 'Content-Type': 'text/plain' },
-                body: JSON.stringify(payload)
+            await fetch(scriptUrl, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                body: JSON.stringify({
+                    action: "submitDuty",
+                    specialty: document.getElementById('spec-select').value,
+                    name: doctorName
+                })
             });
-            alert("Duty Updated Successfully ✅");
-        } catch (e) {
-            alert("Error connecting to server");
-        } finally {
-            btn.innerText = "Confirm Duty";
-            btn.disabled = false;
+            card.classList.remove('loading-active');
+            btn.classList.add('fetched-active');
+            btn.innerText = "SUCCESS ✅";
+            setTimeout(() => { btn.classList.remove('fetched-active'); btn.innerText = "UPDATE"; }, 2000);
+        } catch (e) { 
+            card.classList.remove('loading-active');
+            btn.innerText = "RETRY"; 
+            setTimeout(() => { btn.innerText = "UPDATE"; }, 2000);
         }
     }
 </script>
+
+
 </body>
 </html>
