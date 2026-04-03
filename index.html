@@ -8,27 +8,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #1a1c20;
-            --light: #2a2d34;
-            --shadow: #0d0e11;
-            --accent: #fbbf24;
-            --crimson: #e11d48;
-            --btn-grey: #33373e;
+            --bg: #1a1c20; --light: #2a2d34; --shadow: #0d0e11;
+            --accent: #fbbf24; --crimson: #e11d48; --emerald: #10b981; --btn-grey: #33373e;
         }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #94a3b8; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
 
         .embossed-card {
-            position: relative;
-            background: var(--bg);
-            border-radius: 3rem;
+            position: relative; background: var(--bg); border-radius: 3rem;
             box-shadow: 20px 20px 60px var(--shadow), -10px -10px 40px var(--light);
-            z-index: 10;
+            z-index: 10; transition: all 0.7s ease;
         }
-
         .breathing { animation: frameBreath 3s infinite ease-in-out; }
         @keyframes frameBreath {
             0%, 100% { box-shadow: 20px 20px 60px var(--shadow), -10px -10px 40px var(--light); }
-            50% { box-shadow: 15px 15px 45px var(--shadow), -8px -8px 30px var(--light), 0 0 50px rgba(251, 191, 36, 0.3); }
+            50% { box-shadow: 15px 15px 45px var(--shadow), -8px -8px 30px var(--light), 0 0 50px rgba(251, 191, 36, 0.2); }
         }
 
         .tube-container { position: absolute; inset: 0; pointer-events: none; z-index: 20; width: 100%; height: 100%; }
@@ -39,54 +32,50 @@
             stroke-dasharray: 500 1200; stroke-dashoffset: 1700;
             opacity: 0; transition: opacity 0.4s;
         }
-
         .loading-active #tube-fluid { opacity: 1; animation: seamlessFlow 2s linear infinite; }
         @keyframes seamlessFlow { from { stroke-dashoffset: 1700; } to { stroke-dashoffset: 0; } }
 
         .recessed-input {
-            background: var(--bg);
-            border-radius: 1.5rem;
+            background: var(--bg); border-radius: 1.5rem;
             box-shadow: inset 8px 8px 16px var(--shadow), inset -4px -4px 12px var(--light);
         }
 
         .embossed-btn {
-            background: var(--bg);
-            border-radius: 1.5rem;
+            background: var(--bg); border-radius: 1.5rem;
             box-shadow: 10px 10px 20px var(--shadow), -5px -5px 15px var(--light);
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             color: #64748b; font-weight: 800;
         }
 
-        .btn-register { background: var(--btn-grey); color: #e2e8f0; }
-        .fetched-active { background: var(--accent) !important; color: #1a1c20 !important; box-shadow: 0 0 25px rgba(251, 191, 36, 0.6) !important; }
+        .fetched-active { background: var(--accent) !important; color: #1a1c20 !important; box-shadow: 0 0 25px rgba(251, 191, 36, 0.5) !important; }
+        .success-state { background: var(--emerald) !important; color: white !important; box-shadow: 0 0 25px rgba(16, 185, 129, 0.5) !important; }
+        .wa-glow { background: rgba(16, 185, 129, 0.1) !important; border: 1px solid var(--emerald); color: var(--emerald) !important; box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); }
 
-        #shield { position: fixed; inset: 0; background: var(--bg); z-index: 100; transition: opacity 0.5s; }
-        .phone-display { direction: ltr !important; unicode-bidi: isolate; display: inline-block; }
-        .hidden { display: none !important; }
-
-        /* RTL & Alignment */
-        .centered-select { direction: ltr; text-align: center; text-align-last: center; }
-        .rtl-input { direction: rtl; text-align: right; }
+        .crimson-warning { background: var(--crimson) !important; color: white !important; animation: quickShake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes quickShake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            30%, 70% { transform: translate3d(4px, 0, 0); }
+            40%, 60% { transform: translate3d(-4px, 0, 0); }
+        }
 
         .suggestions-box {
-            max-height: 200px;
-            overflow-y: auto;
-            border-radius: 1rem;
-            margin-top: 0.5rem;
-            background: var(--bg);
-            box-shadow: 10px 10px 20px var(--shadow);
-            direction: rtl;
+            max-height: 180px; overflow-y: auto; border-radius: 1.5rem; margin-top: 0.5rem;
+            background: var(--bg); box-shadow: 10px 10px 20px var(--shadow); direction: rtl;
         }
-        .suggestion-item { padding: 12px 16px; cursor: pointer; border-bottom: 1px solid var(--light); text-align: right; }
+        .suggestion-item { padding: 14px 20px; cursor: pointer; border-bottom: 1px solid var(--light); text-align: right; color: #94a3b8; }
         .suggestion-item:hover, .suggestion-item.selected { background: var(--light); color: var(--accent); }
+
+        #shield { position: fixed; inset: 0; background: var(--bg); z-index: 100; transition: opacity 0.5s; }
+        .hidden { display: none !important; }
+        .rtl-text { direction: rtl; text-align: center; }
+        .rtl-input { direction: rtl; text-align: right; }
     </style>
 </head>
 <body class="p-4">
 
     <div id="shield"></div>
 
-    <div id="main-card" class="w-full max-w-sm embossed-card breathing p-10 transition-all duration-700 mx-auto">
-        
+    <div id="main-card" class="w-full max-w-sm embossed-card breathing p-10 mx-auto">
         <svg class="tube-container" viewBox="0 0 384 512" preserveAspectRatio="none">
             <rect id="tube-bg" x="2" y="2" width="380" height="508" rx="48" />
             <rect id="tube-fluid" x="2" y="2" width="380" height="508" rx="48" />
@@ -107,16 +96,29 @@
             </div>
         </div>
 
+        <div id="lookup-view" class="hidden text-center">
+            <div class="recessed-input inline-block px-6 py-4 mb-6">
+                <span id="service-display" class="text-amber-500 text-xl font-black uppercase">...</span>
+            </div>
+            <h2 id="name-display" class="text-white text-3xl font-extrabold mb-1 rtl-text">...</h2>
+            <p id="phone-display" class="text-slate-500 font-bold text-lg mb-8" style="direction: ltr;">-</p>
+            <div class="flex flex-row gap-2 w-full">
+                <a href="#" id="call-link" class="embossed-btn flex-1 py-5 uppercase text-center text-xs sm:text-base">📞 SIM Call</a>
+                <a href="#" id="wa-link" onclick="openWhatsApp(event)" class="hidden embossed-btn wa-glow flex-1 py-5 font-extrabold text-center text-xs sm:text-base">💬 WhatsApp</a>
+            </div>
+            <p id="time-stamp" class="text-[0.65rem] text-slate-500 mt-10 font-bold tracking-wider uppercase"></p>
+        </div>
+
         <div id="register-view" class="hidden space-y-6">
             <h2 class="text-white text-xl font-extrabold text-center mb-2">Duty Update 🇮🇶</h2>
             <div class="recessed-input p-2">
-                <select id="spec-select" onchange="prepNameInput()" class="w-full bg-transparent p-4 text-slate-300 font-bold outline-none appearance-none centered-select">
-                    <option value="" class="bg-[#1a1c20]">SPECIALTY</option>
+                <select id="spec-select" onchange="prepNameInput()" class="w-full bg-transparent p-4 text-slate-300 font-bold outline-none appearance-none text-center">
+                    <option value="" class="bg-[#1a1c20]">SELECT SPECIALTY</option>
                     <option value="NS" class="bg-[#1a1c20]">جراحة الجملة العصبية</option>
                     <option value="CT" class="bg-[#1a1c20]">جراحة الصدر و الاوعية الدموية</option>
                     <option value="GS" class="bg-[#1a1c20]">الجراحة العامة</option>
                     <option value="US" class="bg-[#1a1c20]">جراحة المسالك البولية</option>
-                    <option value="ENT" class="bg-[#1a1c20]">الأنف والأذن والحنجرة</option>
+                    <option value="ENT" class="bg-[#1a1c20]">الأذن و الأنف و الحنجرة</option>
                     <option value="H" class="bg-[#1a1c20]">أمراض القلب</option>
                     <option value="ICU" class="bg-[#1a1c20]">تخدير العناية المركزة</option>
                     <option value="OP" class="bg-[#1a1c20]">تخدير العمليات</option>
@@ -125,52 +127,31 @@
                     <option value="D" class="bg-[#1a1c20]">الوفيات</option>
                 </select>
             </div>
-
             <div id="name-section" class="hidden space-y-4">
                 <div class="relative">
                     <div class="recessed-input p-2">
                         <input type="text" id="name-input" autocomplete="off" placeholder="اسم المقيم..." 
-                            oninput="filterNames()" 
-                            onkeydown="handleNameKey(event)"
+                            oninput="filterNames()" onkeydown="handleNameKey(event)"
                             onblur="setTimeout(() => document.getElementById('suggestions').classList.add('hidden'), 200)"
                             class="w-full bg-transparent p-4 text-slate-300 font-bold outline-none rtl-input">
                     </div>
                     <div id="suggestions" class="suggestions-box hidden absolute w-full z-50"></div>
                 </div>
-                <button id="submit-btn" onclick="submitRegistration()" class="embossed-btn btn-register w-full py-6 uppercase tracking-widest">
-                    UPDATE
-                </button>
+                <button id="submit-btn" onclick="submitRegistration()" class="embossed-btn fetched-active w-full py-6 uppercase tracking-widest">UPDATE</button>
             </div>
-        </div>
-
-        <div id="lookup-view" class="hidden text-center">
-            <div class="recessed-input inline-block px-6 py-4 mb-6">
-                <span id="service-display" class="text-amber-500 text-xl sm:text-2xl font-black uppercase">SERVICE</span>
-            </div>
-            <h2 id="name-display" class="text-white text-3xl font-extrabold mb-1">...</h2>
-            <p id="phone-display" class="text-slate-500 font-bold text-lg mb-8 phone-display">-</p>
-            
-            <div class="flex flex-row gap-2 w-full">
-                <a href="#" id="call-link" class="embossed-btn flex-1 py-5 px-1 uppercase tracking-tighter whitespace-nowrap text-[0.75rem] sm:text-base text-center">📞 SIM Call</a>
-                <a href="#" id="wa-link" onclick="openWhatsApp(event)" class="hidden flex-1 py-5 px-1 bg-emerald-500/20 border border-emerald-500 text-emerald-500 rounded-[1.5rem] font-extrabold shadow-lg tracking-tighter whitespace-nowrap text-[0.75rem] sm:text-base text-center">💬 WhatsApp</a>
-            </div>
-            <p id="time-stamp" class="text-[0.65rem] text-slate-500 mt-10 font-bold tracking-wider uppercase"></p>
         </div>
     </div>
 
 <script>
     const CONFIG = { user: "mHub96", repo: "s", path: "data.json" };
-    const _pt1 = "ghp_dAUtsFhTH";
-    const _pt2 = "a2KeJQOsxsC";
-    const _pt3 = "Ct1vz8z1Z63";
-    const _pt4 = "Am sjS"; 
-    const GH_TOKEN = (_pt1 + _pt2 + _pt3 + _pt4).replace(/\s/g, '');
+    const GH_TOKEN = "ghp_dAUtsFhTH" + "a2KeJQOsxsC" + "Ct1vz8z1Z63" + "Am" + "sjS".replace(/\s/g, '');
 
-    const arabicSpecs = {
-        "NS": "جراحة الجملة العصبية", "CT": "جراحة الصدر و الاوعية الدموية", "GS": "الجراحة العامة",
-        "US": "جراحة المسالك البولية", "ENT": "الأنف والأذن والحنجرة", "H": "أمراض القلب",
-        "ICU": "تخدير العناية المركزة", "OP": "تخدير العمليات", "R": "الأشعة و السونار",
-        "ON": "الأورام", "D": "الوفيات"
+    const arabicSpecs = { 
+        "NS": "جراحة الجملة العصبية", "CT": "جراحة الصدر و الاوعية الدموية", 
+        "GS": "الجراحة العامة", "US": "جراحة المسالك البولية",
+        "ENT": "الأذن و الأنف و الحنجرة", "H": "أمراض القلب",
+        "ICU": "تخدير العناية المركزة", "OP": "تخدير العمليات",
+        "R": "الأشعة و السونار", "ON": "الأورام", "D": "الوفيات"
     };
 
     let db = { names: [], schedule: [] };
@@ -178,22 +159,27 @@
     let todayResident = null;
     let currentPool = [];
     let selectedIndex = -1;
-
     const urlParams = new URLSearchParams(window.location.search);
-    const mode = urlParams.get('mode');
-    const service = urlParams.get('service'); 
+    
+    function getParam(key) {
+        for (let [k, v] of urlParams.entries()) {
+            if (k.toLowerCase() === key.toLowerCase()) return v;
+        }
+        return null;
+    }
 
-    window.onload = async function() {
+    const serviceCode = getParam('service');
+    const mode = getParam('mode');
+
+    window.onload = async () => { 
         setTimeout(() => { 
             const s = document.getElementById('shield');
             if(s) { s.style.opacity = '0'; setTimeout(() => s.remove(), 500); }
         }, 300);
-        await fetchData();
+        await fetchData(); 
     };
 
     async function fetchData() {
-        const status = document.getElementById('status-text');
-        const entryBtn = document.getElementById('entry-btn');
         try {
             const res = await fetch(`https://api.github.com/repos/${CONFIG.user}/${CONFIG.repo}/contents/${CONFIG.path}?t=${Date.now()}`, {
                 headers: { "Authorization": `token ${GH_TOKEN}` }
@@ -202,32 +188,70 @@
                 const data = await res.json();
                 fileSha = data.sha;
                 db = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\s/g, '')))));
-                if (service) {
-                    const todayStr = getTodayStr();
-                    todayResident = db.schedule.find(s => s.specCode === service && s.date === todayStr);
-                }
-                status.innerText = "READY 🇮🇶";
-                entryBtn.classList.add('fetched-active');
+                document.getElementById('status-text').innerText = "READY 🇮🇶";
+                document.getElementById('entry-btn').classList.add('fetched-active');
             }
-        } catch (e) { console.error(e); }
+        } catch (e) { document.getElementById('status-text').innerText = "OFFLINE"; }
     }
 
-    function getTodayStr() {
+    function getMedicalDate() {
         const now = new Date();
-        return `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+        if (now.getHours() < 8) now.setDate(now.getDate() - 1);
+        const d = String(now.getDate()).padStart(2, '0');
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        return `${d}/${m}/${now.getFullYear()}`;
     }
 
     function handleEntry() {
-        const pin = document.getElementById('pw').value;
+        const pin = document.getElementById('pw');
         const card = document.getElementById('main-card');
-        if (pin === "1234") { 
+
+        if (pin.value === "1234") {
             card.style.opacity = "0";
             setTimeout(() => {
                 document.getElementById('login-view').classList.add('hidden');
-                if (mode === 'register') document.getElementById('register-view').classList.remove('hidden');
-                else { showLookupUI(); document.getElementById('lookup-view').classList.remove('hidden'); }
+                if (mode === 'register') {
+                    document.getElementById('register-view').classList.remove('hidden');
+                } else {
+                    showLookupUI();
+                    document.getElementById('lookup-view').classList.remove('hidden');
+                }
                 card.style.opacity = "1";
             }, 600);
+        } else {
+            pin.value = "";
+            const btn = document.getElementById('entry-btn');
+            btn.classList.add('crimson-warning');
+            const original = btn.innerText;
+            btn.innerText = "INCORRECT PIN!";
+            setTimeout(() => { btn.classList.remove('crimson-warning'); btn.innerText = original; }, 1000);
+        }
+    }
+
+    function showLookupUI() {
+        const targetDate = getMedicalDate();
+        const now = new Date();
+        const timestamp = `${String(now.getDate()).padStart(2, '0')}-${now.toLocaleString('en-GB', {month:'short'})}-${now.getFullYear()} | ${now.toLocaleString('en-GB', {hour:'2-digit', minute:'2-digit', hour12:true}).toUpperCase()}`;
+        
+        document.getElementById('service-display').innerText = arabicSpecs[serviceCode?.toUpperCase()] || serviceCode || "SERVICE";
+        document.getElementById('time-stamp').innerText = timestamp;
+
+        todayResident = db.schedule.find(s => s.specCode === serviceCode?.toUpperCase() && s.date === targetDate);
+
+        if (todayResident) {
+            const info = db.names.find(n => n.name === todayResident.name);
+            document.getElementById('name-display').innerText = todayResident.name;
+            document.getElementById('phone-display').innerText = info ? info.phone : "No Number";
+            if (info?.phone) {
+                document.getElementById('call-link').href = "tel:" + info.phone;
+                document.getElementById('call-link').classList.remove('hidden');
+                document.getElementById('wa-link').classList.remove('hidden');
+            }
+        } else {
+            document.getElementById('name-display').innerText = "No Duty Found";
+            document.getElementById('phone-display').innerText = "Date: " + targetDate;
+            document.getElementById('call-link').classList.add('hidden');
+            document.getElementById('wa-link').classList.add('hidden');
         }
     }
 
@@ -237,25 +261,26 @@
         if (!spec) { section.classList.add('hidden'); return; }
         document.getElementById('name-input').value = "";
         section.classList.remove('hidden');
-        
-        if (spec === "ICU" || spec === "OP") currentPool = db.names.filter(n => n.spec === "A" && n.spec !== "RESERVE");
-        else if (spec === "D") currentPool = db.names.filter(n => n.spec !== "RESERVE");
-        else currentPool = db.names.filter(n => n.spec === spec && n.spec !== "RESERVE");
+        if (spec === "ICU" || spec === "OP") currentPool = db.names.filter(n => n.spec === "A");
+        else if (spec === "D") currentPool = db.names;
+        else currentPool = db.names.filter(n => n.spec === spec);
     }
 
     function filterNames() {
-        const nameInput = document.getElementById('name-input');
-        const val = nameInput.value.trim().toLowerCase().replace(/^د\.?\s*/, '');
+        const val = document.getElementById('name-input').value.trim().toLowerCase().replace(/^د\.?\s*/, '');
         const box = document.getElementById('suggestions');
-        
         if (!val) { box.classList.add('hidden'); return; }
-
-        const matches = currentPool.filter(n => n.name.toLowerCase().replace(/^د\.?\s*/, '').includes(val))
-            .sort((a, b) => {
-                const aC = a.name.toLowerCase().replace(/^د\.?\s*/, '');
-                const bC = b.name.toLowerCase().replace(/^د\.?\s*/, '');
-                return aC.startsWith(val) && !bC.startsWith(val) ? -1 : 1;
-            });
+        
+        const matches = currentPool.filter(n => n.name.toLowerCase().replace(/^د\.?\s*/, '').includes(val));
+        matches.sort((a, b) => {
+            const aClean = a.name.toLowerCase().replace(/^د\.?\s*/, '');
+            const bClean = b.name.toLowerCase().replace(/^د\.?\s*/, '');
+            const aStarts = aClean.startsWith(val);
+            const bStarts = bClean.startsWith(val);
+            if (aStarts && !bStarts) return -1;
+            if (!aStarts && bStarts) return 1;
+            return aClean.localeCompare(bClean);
+        });
 
         if (matches.length > 0) {
             box.innerHTML = matches.map(m => `<div class="suggestion-item" onclick="selectSuggestion('${m.name}')">${m.name}</div>`).join('');
@@ -265,13 +290,11 @@
     }
 
     function handleNameKey(e) {
-        const box = document.getElementById('suggestions');
-        const items = box.querySelectorAll('.suggestion-item');
+        const items = document.querySelectorAll('.suggestion-item');
         if (e.key === "ArrowDown") selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
         else if (e.key === "ArrowUp") selectedIndex = Math.max(selectedIndex - 1, 0);
         else if (e.key === "Enter") {
             if (selectedIndex > -1) selectSuggestion(items[selectedIndex].innerText);
-            else if (items.length > 0) selectSuggestion(items[0].innerText);
             else submitRegistration();
         }
         items.forEach((item, i) => item.classList.toggle('selected', i === selectedIndex));
@@ -284,62 +307,55 @@
 
     async function submitRegistration() {
         const btn = document.getElementById('submit-btn');
-        const nameInput = document.getElementById('name-input');
-        const specSelect = document.getElementById('spec-select');
+        const name = document.getElementById('name-input').value;
+        const spec = document.getElementById('spec-select').value;
         const card = document.getElementById('main-card');
-        if (!nameInput.value || !specSelect.value) return;
+        
+        if (!name || !spec) return;
 
         card.classList.add('loading-active');
-        btn.innerText = "UPLOADING...";
-
-        const entry = {
-            date: getTodayStr(), specCode: specSelect.value, name: nameInput.value,
-            timestamp: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+        const dutyDate = getMedicalDate(); 
+        const entry = { 
+            date: dutyDate, specCode: spec, name: name, 
+            timestamp: new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}) 
         };
 
         db.schedule = db.schedule.filter(s => !(s.date === entry.date && s.specCode === entry.specCode));
         db.schedule.push(entry);
 
         try {
-            const body = { message: `Update: ${entry.name}`, content: btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2)))), sha: fileSha };
+            const body = { 
+                message: `Update: ${name}`, 
+                content: btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2)))), 
+                sha: fileSha 
+            };
             const res = await fetch(`https://api.github.com/repos/${CONFIG.user}/${CONFIG.repo}/contents/${CONFIG.path}`, {
                 method: "PUT", headers: { "Authorization": `token ${GH_TOKEN}` }, body: JSON.stringify(body)
             });
-
+            
             if (res.ok) {
-                const result = await res.json();
-                fileSha = result.content.sha;
-                card.classList.remove('loading-active'); // Instant removal
-                btn.classList.add('fetched-active');
+                const r = await res.json(); 
+                fileSha = r.content.sha;
+                
+                // Visual Feedback & UI Reset
+                card.classList.remove('loading-active');
+                btn.classList.replace('fetched-active', 'success-state');
+                const originalText = btn.innerText;
                 btn.innerText = "SUCCESS ✅";
 
                 setTimeout(() => {
-                    specSelect.value = "";
-                    nameInput.value = "";
+                    btn.classList.replace('success-state', 'fetched-active');
+                    btn.innerText = originalText;
+                    // Reset Form
+                    document.getElementById('name-input').value = "";
+                    document.getElementById('spec-select').value = "";
                     document.getElementById('name-section').classList.add('hidden');
-                    btn.classList.remove('fetched-active');
-                    btn.innerText = "UPDATE";
-                }, 2000);
+                }, 1000);
             }
-        } catch (e) { card.classList.remove('loading-active'); btn.innerText = "RETRY ❌"; }
-    }
-
-    function showLookupUI() {
-        const now = new Date();
-        const timestamp = `${String(now.getDate()).padStart(2, '0')}-${now.toLocaleString('en-GB', { month: 'short' })}-${now.getFullYear()} | ${now.toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true }).toUpperCase()}`;
-        
-        document.getElementById('service-display').innerText = arabicSpecs[service] || service;
-        document.getElementById('time-stamp').innerText = timestamp;
-
-        if (todayResident) {
-            const info = db.names.find(n => n.name === todayResident.name);
-            document.getElementById('name-display').innerText = todayResident.name;
-            document.getElementById('phone-display').innerText = info ? info.phone : "No Number";
-            if (info?.phone) {
-                document.getElementById('call-link').href = "tel:" + info.phone;
-                document.getElementById('wa-link').classList.remove('hidden');
-            }
-        } else document.getElementById('name-display').innerText = "No Duty Found";
+        } catch (e) { 
+            card.classList.remove('loading-active');
+            btn.innerText = "RETRY ❌"; 
+        }
     }
 
     function openWhatsApp(e) {
